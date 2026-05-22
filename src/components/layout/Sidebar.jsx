@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineHome, AiOutlineUser, AiOutlineSetting } from 'react-icons/ai';
 import { BsBuilding } from 'react-icons/bs';
+import { HiOutlineLocationMarker } from 'react-icons/hi';
 import { FiLogOut } from 'react-icons/fi';
 import { RiMenuFoldLine, RiMenuUnfoldLine } from 'react-icons/ri';
 import AuthService from '../../services/auth.service';
@@ -14,6 +15,7 @@ const Sidebar = () => {
     { path: '/dashboard', icon: <AiOutlineHome size={20} />, title: 'Accueil' },
     { path: '/dashboard/users', icon: <AiOutlineUser size={20} />, title: 'Utilisateurs' },
     { path: '/dashboard/companies', icon: <BsBuilding size={20} />, title: 'Compagnies' },
+    { path: '/dashboard/provinces', icon: <HiOutlineLocationMarker size={20} />, title: 'Provinces' },
     { path: '/dashboard/settings', icon: <AiOutlineSetting size={20} />, title: 'Paramètres' },
   ];
 
