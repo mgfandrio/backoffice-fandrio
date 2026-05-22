@@ -16,6 +16,9 @@ import StatusTabs from '../components/ui/StatusTabs';
 import DataTable from '../components/ui/DataTable';
 import StatusBadge from '../components/ui/StatusBadge';
 import UserService from '../services/user.service';
+import UserDetailModal from '../components/users/UserDetailModal';
+import UserEditModal from '../components/users/UserEditModal';
+import ConfirmModal from '../components/ui/ConfirmModal';
 
 const TABS = {
     ACTIFS: 'actifs',
@@ -31,6 +34,10 @@ const UsersPage = () => {
     const [stats, setStats] = useState({ total: 0, actifs: 0 });
     const [activeTab, setActiveTab] = useState(TABS.TOUS);
     const [search, setSearch] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState(null);
+    const [editingUser, setEditingUser] = useState(null);
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -125,26 +132,58 @@ const UsersPage = () => {
         { key: TABS.SUPPRIMES, label: 'Supprimés', count: tabCounts.supprimes },
     ];
 
-    // Action handlers (structure only)
+    // Action handlers
     const handleViewDetails = (user) => {
-        // TODO: navigate to user detail page or open modal
-        console.log('Voir détails:', user.id);
+        setSelectedUserId(user.id);
     };
 
     const handleEdit = (user) => {
-        // TODO: open edit modal or navigate
-        console.log('Modifier:', user.id);
+        setEditingUser(user);
     };
 
     const handleToggleStatus = (user) => {
-        // TODO: call activer/desactiver API
         const status = getStatus(user);
-        console.log(status === 'actif' ? 'Désactiver:' : 'Activer:', user.id);
+        const isActive = status === 'actif';
+        setConfirmAction({
+            title: isActive ? 'Désactiver l\'utilisateur' : 'Activer l\'utilisateur',
+            message: `Voulez-vous ${isActive ? 'désactiver' : 'activer'} ${user.prenom ?? ''} ${user.nom ?? ''} ?`,
+            confirmLabel: isActive ? 'Désactiver' : 'Activer',
+            confirmColor: isActive ? 'amber' : 'emerald',
+            action: async () => {
+                if (isActive) {
+                    await UserService.desactiver(user.id);
+                } else {
+                    await UserService.activer(user.id);
+                }
+            },
+        });
     };
 
     const handleDelete = (user) => {
-        // TODO: confirm then call supprimer API
-        console.log('Supprimer:', user.id);
+        setConfirmAction({
+            title: 'Supprimer l\'utilisateur',
+            message: `Voulez-vous vraiment supprimer ${user.prenom ?? ''} ${user.nom ?? ''} ? Cette action est irréversible.`,
+            confirmLabel: 'Supprimer',
+            confirmColor: 'red',
+            action: async () => {
+                await UserService.supprimer(user.id);
+            },
+        });
+    };
+
+    const executeConfirmAction = async () => {
+        if (!confirmAction?.action) return;
+        setActionLoading(true);
+        try {
+            await confirmAction.action();
+            setConfirmAction(null);
+            fetchData();
+        } catch (err) {
+            setError(err?.message || 'Une erreur est survenue.');
+            setConfirmAction(null);
+        } finally {
+            setActionLoading(false);
+        }
     };
 
     const getUserName = (user) => {
@@ -177,15 +216,6 @@ const UsersPage = () => {
             key: 'telephone',
             label: 'Téléphone',
             render: (user) => <span className="text-gray-300">{user.telephone ?? user.phone ?? '—'}</span>,
-        },
-        {
-            key: 'reservations',
-            label: 'Réservations',
-            render: (user) => (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400">
-                    {user.total_reservations ?? user.reservations_count ?? 0}
-                </span>
-            ),
         },
         {
             key: 'statut',
@@ -302,6 +332,35 @@ const UsersPage = () => {
                     </p>
                 )}
             </div>
+
+            {/* User Detail Modal */}
+            {selectedUserId && (
+                <UserDetailModal
+                    userId={selectedUserId}
+                    onClose={() => setSelectedUserId(null)}
+                />
+            )}
+
+            {/* User Edit Modal */}
+            {editingUser && (
+                <UserEditModal
+                    user={editingUser}
+                    onClose={() => setEditingUser(null)}
+                    onSuccess={fetchData}
+                />
+            )}
+
+            {/* Confirm Action Modal */}
+            <ConfirmModal
+                isOpen={!!confirmAction}
+                onClose={() => setConfirmAction(null)}
+                onConfirm={executeConfirmAction}
+                title={confirmAction?.title}
+                message={confirmAction?.message}
+                confirmLabel={confirmAction?.confirmLabel}
+                confirmColor={confirmAction?.confirmColor}
+                loading={actionLoading}
+            />
         </DashboardLayout>
     );
 };

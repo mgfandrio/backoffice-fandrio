@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
             LISTE: '/admin/utilisateurs/recupListeUtilisateur',
             STATISTIQUES: '/admin/utilisateurs/statistiques',
             DETAIL: (id) => `/admin/utilisateurs/detailUtilisateur/${id}`,
+            MODIFIER: (id) => `/admin/utilisateurs/modifierUtilisateur/${id}`,
             ACTIVER: (id) => `/admin/utilisateurs/${id}/activer`,
             DESACTIVER: (id) => `/admin/utilisateurs/${id}/desactiver`,
             REACTIVER: (id) => `/admin/utilisateurs/${id}/reactiver`,

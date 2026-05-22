@@ -5,6 +5,7 @@ const UserService = {
     getAll: (params = {}) => ApiService.get(API_ENDPOINTS.ADMIN.UTILISATEURS.LISTE, { params }),
     getStats: () => ApiService.get(API_ENDPOINTS.ADMIN.UTILISATEURS.STATISTIQUES),
     getDetail: (id) => ApiService.get(API_ENDPOINTS.ADMIN.UTILISATEURS.DETAIL(id)),
+    modifier: (id, data) => ApiService.put(API_ENDPOINTS.ADMIN.UTILISATEURS.MODIFIER(id), data),
     activer: (id) => ApiService.patch(API_ENDPOINTS.ADMIN.UTILISATEURS.ACTIVER(id)),
     desactiver: (id) => ApiService.patch(API_ENDPOINTS.ADMIN.UTILISATEURS.DESACTIVER(id)),
     reactiver: (id) => ApiService.patch(API_ENDPOINTS.ADMIN.UTILISATEURS.REACTIVER(id)),
