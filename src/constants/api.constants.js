@@ -19,7 +19,13 @@ export const API_ENDPOINTS = {
     ADMIN: {
         UTILISATEURS: {
             LISTE: '/admin/utilisateurs/recupListeUtilisateur',
-            STATISTIQUES: '/admin/utilisateurs/statistiques'
+            STATISTIQUES: '/admin/utilisateurs/statistiques',
+            DETAIL: (id) => `/admin/utilisateurs/detailUtilisateur/${id}`,
+            ACTIVER: (id) => `/admin/utilisateurs/${id}/activer`,
+            DESACTIVER: (id) => `/admin/utilisateurs/${id}/desactiver`,
+            REACTIVER: (id) => `/admin/utilisateurs/${id}/reactiver`,
+            CHANGER_STATUT: (id) => `/admin/utilisateurs/${id}/statut`,
+            SUPPRIMER: (id) => `/admin/utilisateurs/delete/${id}`,
         },
         COMPAGNIES: {
             LISTE: '/admin/compagnies/recupListecompagnie',

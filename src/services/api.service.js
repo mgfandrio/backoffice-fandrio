@@ -24,6 +24,10 @@ export const ApiService = {
         return axiosInstance.put(endpoint, data);
     },
 
+    patch: (endpoint, data) => {
+        return axiosInstance.patch(endpoint, data);
+    },
+
     delete: (endpoint) => {
         return axiosInstance.delete(endpoint);
     }
