@@ -13,6 +13,24 @@ export const API_ENDPOINTS = {
     AUTH: {
         LOGIN: '/connexion',
         LOGOUT: '/deconnexion',
-        REFRESH: '/rafraichir-token'
+        REFRESH: '/rafraichir-token',
+        ME: '/moi'
+    },
+    ADMIN: {
+        UTILISATEURS: {
+            LISTE: '/admin/utilisateurs/recupListeUtilisateur',
+            STATISTIQUES: '/admin/utilisateurs/statistiques'
+        },
+        COMPAGNIES: {
+            LISTE: '/admin/compagnies/recupListecompagnie',
+            STATISTIQUES: '/admin/compagnies/statistiques'
+        },
+        PROVINCES: {
+            LISTE: '/admin/provinces/recuperListeProvince',
+            STATISTIQUES: '/admin/provinces/statistiques'
+        },
+        COMMISSIONS: {
+            DASHBOARD: '/admin/commissions/dashboard'
+        }
     }
 };
