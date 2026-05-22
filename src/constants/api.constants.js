@@ -30,7 +30,12 @@ export const API_ENDPOINTS = {
         },
         COMPAGNIES: {
             LISTE: '/admin/compagnies/recupListecompagnie',
-            STATISTIQUES: '/admin/compagnies/statistiques'
+            STATISTIQUES: '/admin/compagnies/statistiques',
+            DETAIL: (id) => `/admin/compagnies/detailCompagnie/${id}`,
+            CREER: '/admin/compagnies/creerCompagnie',
+            MODIFIER: (id) => `/admin/compagnies/updateCompagnie/${id}`,
+            CHANGER_STATUT: (id) => `/admin/compagnies/${id}/statut`,
+            SUPPRIMER: (id) => `/admin/compagnies/${id}`,
         },
         PROVINCES: {
             LISTE: '/admin/provinces/recuperListeProvince',
