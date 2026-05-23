@@ -25,9 +25,8 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`fixed left-0 top-0 h-full transition-all duration-300 ${
-      isCollapsed ? 'w-20' : 'w-64'
-    } bg-[#2f3349] text-white`}>
+    <div className={`fixed left-0 top-0 h-full transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'
+      } bg-[#2f3349] text-white`}>
       <div className="p-6">
         <div className="flex items-center justify-between mb-8">
           {!isCollapsed && <h1 className="text-2xl font-bold">FANDRIO</h1>}
@@ -43,11 +42,10 @@ const Sidebar = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${
-                location.pathname === item.path
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${location.pathname === item.path
                   ? 'bg-[#3b4154] text-white'
                   : 'text-gray-400 hover:bg-[#3b4154] hover:text-white'
-              }`}
+                }`}
             >
               <span className="text-xl">{item.icon}</span>
               {!isCollapsed && <span className="text-sm font-medium">{item.title}</span>}
@@ -57,9 +55,8 @@ const Sidebar = () => {
       </div>
       <button
         onClick={handleLogout}
-        className={`absolute bottom-8 left-4 right-4 flex items-center ${
-          isCollapsed ? 'justify-center' : 'gap-4'
-        } px-4 py-3 rounded-xl text-gray-400 hover:bg-[#3b4154] hover:text-white`}
+        className={`absolute bottom-8 left-4 right-4 flex items-center ${isCollapsed ? 'justify-center' : 'gap-4'
+          } px-4 py-3 rounded-xl text-gray-400 hover:bg-[#3b4154] hover:text-white`}
       >
         <FiLogOut size={20} />
         {!isCollapsed && <span className="text-sm font-medium">Déconnexion</span>}

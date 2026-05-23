@@ -14,7 +14,9 @@ export const API_ENDPOINTS = {
         LOGIN: '/connexion',
         LOGOUT: '/deconnexion',
         REFRESH: '/rafraichir-token',
-        ME: '/moi'
+        ME: '/moi',
+        PROFIL: '/profil',
+        CHANGER_MOT_DE_PASSE: '/profil/mot-de-passe',
     },
     ADMIN: {
         UTILISATEURS: {
@@ -39,7 +41,11 @@ export const API_ENDPOINTS = {
         },
         PROVINCES: {
             LISTE: '/admin/provinces/recuperListeProvince',
-            STATISTIQUES: '/admin/provinces/statistiques'
+            STATISTIQUES: '/admin/provinces/statistiques',
+            ORIENTATIONS: '/admin/provinces/orientations',
+            DETAIL: (id) => `/admin/provinces/recupererProvince/${id}`,
+            MODIFIER: (id) => `/admin/provinces/miseAjourProvince/${id}`,
+            SUPPRIMER: (id) => `/admin/provinces/supprimerProvince/${id}`,
         },
         COMMISSIONS: {
             DASHBOARD: '/admin/commissions/dashboard'
