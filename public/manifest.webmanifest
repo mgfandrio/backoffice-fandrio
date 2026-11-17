@@ -1,0 +1,13 @@
+{
+  "name": "FANDRIO Back-office",
+  "short_name": "FANDRIO",
+  "description": "Gestion des voyages, du guichet et des compagnies FANDRIO",
+  "lang": "fr",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F7FB",
+  "theme_color": "#062A4A",
+  "icons": [
+    { "src": "/icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

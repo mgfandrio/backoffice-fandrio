@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    margin: 0;
+    background: theme('colors.fond');
+    color: theme('colors.encre.DEFAULT');
+    font-family: theme('fontFamily.sans');
+  }
+  /* Couleur des liens simples ; un lien stylé (bouton, menu) la remplace par sa classe */
+  a {
+    color: theme('colors.ocean.800');
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.ocean.500');
+    outline-offset: 2px;
+  }
+}
