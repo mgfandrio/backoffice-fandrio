@@ -1,19 +1,25 @@
+import { lazy, ReactNode, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { accueilDe, useAuth } from '@/auth/AuthContext';
 import { Protege } from '@/auth/Protege';
 import { AppLayout } from '@/layout/AppLayout';
 import { MENU_COMPAGNIE, MENU_SYSTEME } from '@/navigation/menus';
+import { Squelette } from '@/components/ui';
 import Connexion from '@/pages/Connexion';
 import AVenir from '@/pages/AVenir';
 import Introuvable from '@/pages/Introuvable';
-import AccueilCompagnie from '@/pages/compagnie/Accueil';
-import Guichet from '@/pages/compagnie/Guichet';
-import Embarquement from '@/pages/compagnie/Embarquement';
-import Reservations from '@/pages/compagnie/Reservations';
-import Suivi from '@/pages/compagnie/Suivi';
-import AccueilSysteme from '@/pages/systeme/Accueil';
-import Notifications from '@/pages/commun/Notifications';
-import Profil from '@/pages/commun/Profil';
+
+// Chaque écran est chargé à la demande : l'application s'ouvre plus vite
+const AccueilCompagnie = lazy(() => import('@/pages/compagnie/Accueil'));
+const Guichet = lazy(() => import('@/pages/compagnie/Guichet'));
+const Embarquement = lazy(() => import('@/pages/compagnie/Embarquement'));
+const Reservations = lazy(() => import('@/pages/compagnie/Reservations'));
+const Suivi = lazy(() => import('@/pages/compagnie/Suivi'));
+const Voyages = lazy(() => import('@/pages/compagnie/Voyages'));
+const Planning = lazy(() => import('@/pages/compagnie/Planning'));
+const AccueilSysteme = lazy(() => import('@/pages/systeme/Accueil'));
+const Notifications = lazy(() => import('@/pages/commun/Notifications'));
+const Profil = lazy(() => import('@/pages/commun/Profil'));
 
 /** Écrans pas encore livrés : une page qui dit ce qui arrive et à quelle étape. */
 const enAttente = (menu: typeof MENU_COMPAGNIE, prefixe: string) =>
@@ -21,6 +27,22 @@ const enAttente = (menu: typeof MENU_COMPAGNIE, prefixe: string) =>
     .flatMap((s) => s.entrees)
     .filter((e) => e.etape > 0)
     .map((e) => <Route key={e.chemin} path={e.chemin.slice(prefixe.length + 1)} element={<AVenir />} />);
+
+/** Pendant le chargement d'un écran : des blocs gris à la place du contenu. */
+function Chargement({ children }: { children: ReactNode }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col gap-4 p-4 sm:px-7 sm:py-6">
+          <Squelette className="h-24" />
+          <Squelette className="h-64" />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  );
+}
 
 function Racine() {
   const { utilisateur } = useAuth();
@@ -43,22 +65,58 @@ export default function App() {
           path="/compagnie"
           element={
             <Protege role={2}>
-              <AccueilCompagnie />
+              <Chargement>
+                <AccueilCompagnie />
+              </Chargement>
             </Protege>
           }
         />
-        <Route path="/compagnie/*" element={<Protege role={2}><RoutesCompagnie /></Protege>} />
+        <Route
+          path="/compagnie/*"
+          element={
+            <Protege role={2}>
+              <Chargement>
+                <RoutesCompagnie />
+              </Chargement>
+            </Protege>
+          }
+        />
         <Route
           path="/systeme"
           element={
             <Protege role={3}>
-              <AccueilSysteme />
+              <Chargement>
+                <AccueilSysteme />
+              </Chargement>
             </Protege>
           }
         />
-        <Route path="/systeme/*" element={<Protege role={3}><RoutesSysteme /></Protege>} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/profil" element={<Profil />} />
+        <Route
+          path="/systeme/*"
+          element={
+            <Protege role={3}>
+              <Chargement>
+                <RoutesSysteme />
+              </Chargement>
+            </Protege>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <Chargement>
+              <Notifications />
+            </Chargement>
+          }
+        />
+        <Route
+          path="/profil"
+          element={
+            <Chargement>
+              <Profil />
+            </Chargement>
+          }
+        />
         <Route path="*" element={<Introuvable />} />
       </Route>
     </Routes>
@@ -72,6 +130,8 @@ function RoutesCompagnie() {
       <Route path="embarquement" element={<Embarquement />} />
       <Route path="reservations" element={<Reservations />} />
       <Route path="suivi" element={<Suivi />} />
+      <Route path="voyages" element={<Voyages />} />
+      <Route path="planning" element={<Planning />} />
       {enAttente(MENU_COMPAGNIE, '/compagnie')}
       <Route path="*" element={<Introuvable />} />
     </Routes>
