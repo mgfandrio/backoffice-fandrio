@@ -7,6 +7,10 @@ import Connexion from '@/pages/Connexion';
 import AVenir from '@/pages/AVenir';
 import Introuvable from '@/pages/Introuvable';
 import AccueilCompagnie from '@/pages/compagnie/Accueil';
+import Guichet from '@/pages/compagnie/Guichet';
+import Embarquement from '@/pages/compagnie/Embarquement';
+import Reservations from '@/pages/compagnie/Reservations';
+import Suivi from '@/pages/compagnie/Suivi';
 import AccueilSysteme from '@/pages/systeme/Accueil';
 import Notifications from '@/pages/commun/Notifications';
 import Profil from '@/pages/commun/Profil';
@@ -64,6 +68,10 @@ export default function App() {
 function RoutesCompagnie() {
   return (
     <Routes>
+      <Route path="guichet" element={<Guichet />} />
+      <Route path="embarquement" element={<Embarquement />} />
+      <Route path="reservations" element={<Reservations />} />
+      <Route path="suivi" element={<Suivi />} />
       {enAttente(MENU_COMPAGNIE, '/compagnie')}
       <Route path="*" element={<Introuvable />} />
     </Routes>

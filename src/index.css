@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Impression : seule la zone d'impression (ticket, fiche) sort sur le papier */
+#zone-impression {
+  display: none;
+}
+@media print {
+  @page {
+    margin: 0;
+  }
+  body > *:not(#zone-impression) {
+    display: none !important;
+  }
+  #zone-impression {
+    display: block;
+  }
+  body {
+    background: #ffffff !important;
+  }
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;

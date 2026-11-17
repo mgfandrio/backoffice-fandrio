@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, ReactNode, useId, useState } from 'react';
+import { forwardRef, InputHTMLAttributes, ReactNode, useId, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,7 +8,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 /** Champ de saisie avec libellé, aide et message d'erreur (mot de passe : bouton afficher). */
-export function Champ({ libelle, erreur, aide, type = 'text', className = '', ...reste }: Props) {
+export const Champ = forwardRef<HTMLInputElement, Props>(function Champ({ libelle, erreur, aide, type = 'text', className = '', ...reste }, ref) {
   const id = useId();
   const [visible, setVisible] = useState(false);
   const motDePasse = type === 'password';
@@ -19,6 +19,7 @@ export function Champ({ libelle, erreur, aide, type = 'text', className = '', ..
       </label>
       <div className="relative">
         <input
+          ref={ref}
           id={id}
           type={motDePasse && visible ? 'text' : type}
           aria-invalid={erreur ? true : undefined}
@@ -52,4 +53,4 @@ export function Champ({ libelle, erreur, aide, type = 'text', className = '', ..
       )}
     </div>
   );
-}
+});

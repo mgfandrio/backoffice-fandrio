@@ -49,10 +49,10 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
     titre: 'Guichet',
     entrees: [
       { chemin: '/compagnie', libelle: 'Accueil', icone: Home, etape: 0 },
-      { chemin: '/compagnie/guichet', libelle: 'Vente au guichet', icone: Store, etape: 2, contenu: 'Choix du départ, plan des sièges, saisie des voyageurs, encaissement en espèces, ticket imprimé.' },
-      { chemin: '/compagnie/embarquement', libelle: 'Embarquement', icone: QrCode, etape: 2, contenu: 'Lecture des billets à la douchette ou à la caméra, saisie du numéro, liste du voyage, clôture.' },
-      { chemin: '/compagnie/reservations', libelle: 'Réservations', icone: Ticket, etape: 2, contenu: 'Réservations par voyage, détail des billets, fiche voyageurs imprimable.' },
-      { chemin: '/compagnie/suivi', libelle: 'Suivi des voyages', icone: Navigation, etape: 2, compteur: 'suivi', contenu: 'Départs et arrivées, clôture de l’embarquement, confirmation d’arrivée, retards.' },
+      { chemin: '/compagnie/guichet', libelle: 'Vente au guichet', icone: Store, etape: 0, contenu: 'Choix du départ, plan des sièges, saisie des voyageurs, encaissement en espèces, ticket imprimé.' },
+      { chemin: '/compagnie/embarquement', libelle: 'Embarquement', icone: QrCode, etape: 0, contenu: 'Lecture des billets à la douchette ou à la caméra, saisie du numéro, liste du voyage, clôture.' },
+      { chemin: '/compagnie/reservations', libelle: 'Réservations', icone: Ticket, etape: 0, contenu: 'Réservations par voyage, détail des billets, fiche voyageurs imprimable.' },
+      { chemin: '/compagnie/suivi', libelle: 'Suivi des voyages', icone: Navigation, etape: 0, compteur: 'suivi', contenu: 'Départs et arrivées, clôture de l’embarquement, confirmation d’arrivée, retards.' },
     ],
   },
   {

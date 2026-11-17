@@ -44,7 +44,7 @@ function etatDepart(v: any): Etat {
   if (Number(v.statut) === 4) return { libelle: 'Annulé', tonalite: 'danger', action: 'Voir', vers: '/compagnie/voyages' };
   if (Number(v.statut) === 3) return { libelle: 'Parti', tonalite: 'neutre', action: 'Suivre', vers: '/compagnie/suivi' };
   if (v.publie === false) return { libelle: 'Non publié', tonalite: 'neutre', action: 'Voir', vers: '/compagnie/planning' };
-  if (proche) return { libelle: 'Embarquement', tonalite: 'alerte', action: 'Embarquer', vers: '/compagnie/embarquement' };
+  if (proche) return { libelle: 'Embarquement', tonalite: 'alerte', action: 'Embarquer', vers: `/compagnie/embarquement?voyage=${v.id}` };
   if (!v.is_active) return { libelle: 'En pause', tonalite: 'alerte', action: 'Voir', vers: '/compagnie/voyages' };
   if (Number(v.places_reservees) >= Number(v.places_disponibles)) return { libelle: 'Complet', tonalite: 'succes', action: 'Voir', vers: '/compagnie/voyages' };
   return { libelle: 'En vente', tonalite: 'info', action: 'Vendre', vers: '/compagnie/guichet' };
