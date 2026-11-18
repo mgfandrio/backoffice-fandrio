@@ -7,6 +7,7 @@ import { obtenir } from '@/api/requetes';
 import { Bouton, Carte, Dialogue, Erreur, Pastille, Selecteur, Squelette, Tiroir, Vide } from '@/components/ui';
 import { Kpi, Tableau } from '@/components/tableau';
 import { FormulaireCompagnie } from '@/components/systeme/FormulaireCompagnie';
+import { MotDePasseProvisoire } from '@/components/systeme/MotDePasseProvisoire';
 import { DetailCollecte } from './Collectes';
 import { ariary, initiales, nombre, pluriel } from '@/utils/format';
 import { etatCollecte, etatCompagnie } from '@/utils/systeme';
@@ -140,6 +141,7 @@ function FicheCompagnie({ compagnieId, suspendu, onFermer, onModifier }: { compa
   const [confirmerStatut, setConfirmerStatut] = useState(false);
   const [collecte, setCollecte] = useState<number | null>(null);
   const [message, setMessage] = useState<{ titre: string; texte: string } | null>(null);
+  const [nouveauPrincipal, setNouveauPrincipal] = useState<any>(null);
 
   const detail = useQuery({ queryKey: ['systeme', 'compagnie', compagnieId], queryFn: async () => (await obtenir(`/api/admin/compagnies/detailCompagnie/${compagnieId}`)).data, enabled: !!compagnieId });
   const chiffres = useQuery({ queryKey: ['systeme', 'commission', compagnieId], queryFn: async () => (await obtenir(`/api/admin/commissions/compagnies/${compagnieId}`)).data, enabled: !!compagnieId });
@@ -178,7 +180,8 @@ function FicheCompagnie({ compagnieId, suspendu, onFermer, onModifier }: { compa
 
   const active = Number(c?.statut) === 1;
   const e = c ? etatCompagnie(c.statut, suspendu) : null;
-  const admin = c?.administrateurs?.[0];
+  const admins: any[] = (c?.administrateurs || []).filter((a: any) => Number(a.statut) !== 3).sort((a: any, b: any) => Number(b.admin_principal) - Number(a.admin_principal));
+  const admin = admins.find((a) => a.admin_principal) || admins[0];
   const t = chiffres.data?.totaux;
 
   return (
@@ -224,7 +227,7 @@ function FicheCompagnie({ compagnieId, suspendu, onFermer, onModifier }: { compa
 
           <Carte className="grid gap-0 p-0 sm:grid-cols-2">
             {[
-              ['Responsable', admin ? `${admin.prenom} ${admin.nom} · ${admin.telephone}` : '—'],
+              ['Admin principal', admin ? `${admin.prenom} ${admin.nom} · ${admin.telephone}` : '—'],
               ['Contact', `${c.telephone} · ${c.email}`],
               ['Siège', `${c.localisation?.nom || '—'} · ${c.adresse || ''}`],
               ['NIF · STAT', [c.nif, c.stat].filter(Boolean).join(' · ') || '—'],
@@ -234,6 +237,30 @@ function FicheCompagnie({ compagnieId, suspendu, onFermer, onModifier }: { compa
               <div key={l} className={`flex flex-col gap-0.5 border-separateur px-4 py-3 ${i < 4 ? 'border-b' : ''} ${i % 2 === 0 ? 'sm:border-r' : ''}`}>
                 <span className="text-[12.5px] font-bold text-encre-douce">{l}</span>
                 <b className="text-[14px]">{v}</b>
+              </div>
+            ))}
+          </Carte>
+
+          <h3 className="m-0 text-[15px] font-extrabold">Administrateurs ({admins.length})</h3>
+          <Carte className="overflow-hidden p-0">
+            {admins.map((a, i) => (
+              <div key={a.id} className={`flex flex-wrap items-center gap-3 px-4 py-3 ${i ? 'border-t border-separateur' : ''}`}>
+                <span className="min-w-[200px] flex-1">
+                  <b className="block text-[14px]">
+                    {a.prenom} {a.nom}
+                  </b>
+                  <span className="text-[12.5px] font-semibold tabular-nums text-encre-douce">
+                    {a.telephone} · {a.email}
+                  </span>
+                </span>
+                {a.admin_principal ? <Pastille libelle="Admin principal" tonalite="marine" /> : Number(a.statut) === 1 ? <Pastille libelle="Administrateur" tonalite="info" /> : <Pastille libelle="Désactivé" tonalite="neutre" />}
+                {a.mdp_provisoire && <Pastille libelle="Mot de passe à choisir" tonalite="alerte" />}
+                {Number(a.statut) === 1 && <MotDePasseProvisoire utilisateurId={a.id} nom={`${a.prenom} ${a.nom}`} compact />}
+                {!a.admin_principal && Number(a.statut) === 1 && (
+                  <Bouton compact variante="secondaire" onClick={() => setNouveauPrincipal(a)}>
+                    Faire admin principal
+                  </Bouton>
+                )}
               </div>
             ))}
           </Carte>
@@ -309,6 +336,19 @@ function FicheCompagnie({ compagnieId, suspendu, onFermer, onModifier }: { compa
       )}
 
       <DetailCollecte collecteId={collecte} onFermer={() => setCollecte(null)} />
+      <Dialogue
+        ouvert={!!nouveauPrincipal}
+        titre={nouveauPrincipal ? `Faire de ${nouveauPrincipal.prenom} l’admin principal ?` : ''}
+        confirmer="Confirmer"
+        chargement={occupe}
+        onConfirmer={async () => {
+          await agir(() => api.patch(`/api/admin/compagnies/${compagnieId}/admin-principal`, { util_id: nouveauPrincipal.id }), `${nouveauPrincipal.prenom} ${nouveauPrincipal.nom} gère maintenant l’équipe de la compagnie.`);
+          setNouveauPrincipal(null);
+        }}
+        onFermer={() => setNouveauPrincipal(null)}
+      >
+        Seul l’admin principal peut ajouter des personnes à l’équipe, les désactiver ou leur redonner un mot de passe. {admin && admin.id !== nouveauPrincipal?.id ? `${admin.prenom} ${admin.nom} restera administrateur, sans gérer l’équipe.` : ''}
+      </Dialogue>
       <Dialogue
         ouvert={confirmerStatut}
         titre={active ? 'Désactiver la compagnie ?' : 'Réactiver la compagnie ?'}

@@ -74,7 +74,12 @@ api.interceptors.response.use(
   async (error: AxiosError<any>) => {
     const config = error.config as (InternalAxiosRequestConfig & { _rejoue?: boolean }) | undefined;
     const url = config?.url || '';
-    if (error.response?.status === 401 && config && !config._rejoue && session.token() && !url.includes('/api/connexion')) {
+    const code = error.response?.data?.code;
+    // Compte désactivé par l'admin principal ou FANDRIO : fin de session immédiate
+    if (code === 'COMPTE_DESACTIVE' && session.token()) session.vider('deconnexion');
+    // Mot de passe provisoire : l'application affiche l'écran de choix du mot de passe
+    if (code === 'MDP_PROVISOIRE' && session.utilisateur() && !session.utilisateur()?.mdp_provisoire) session.majUtilisateur({ mdp_provisoire: true });
+    if (error.response?.status === 401 && code !== 'COMPTE_DESACTIVE' && config && !config._rejoue && session.token() && !url.includes('/api/connexion')) {
       config._rejoue = true;
       renouvellement ??= renouveler().finally(() => {
         renouvellement = null;
@@ -89,6 +94,11 @@ api.interceptors.response.use(
     return Promise.reject(normaliser(error));
   }
 );
+
+/** Erreurs de validation par champ (premier message de chaque champ). */
+export function champsErreurs(e: unknown): Record<string, string> {
+  return e instanceof ErreurApi && e.erreurs ? Object.fromEntries(Object.entries(e.erreurs).map(([k, v]) => [k, Array.isArray(v) ? v[0] : String(v)])) : {};
+}
 
 export function messageErreur(e: unknown, defaut = 'Une erreur est survenue.'): string {
   if (e instanceof Error && e.message) return e.message;

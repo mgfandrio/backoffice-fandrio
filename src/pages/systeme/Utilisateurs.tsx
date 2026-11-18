@@ -4,6 +4,7 @@ import { Mail, Phone, RefreshCw, Search, Trash2, UserCheck, UserX, Users } from 
 import { api, messageErreur } from '@/api/client';
 import { obtenir } from '@/api/requetes';
 import { Bouton, Carte, Dialogue, Erreur, Pastille, Selecteur, Squelette, Tiroir, Vide } from '@/components/ui';
+import { MotDePasseProvisoire } from '@/components/systeme/MotDePasseProvisoire';
 import { Kpi, Tableau } from '@/components/tableau';
 import { initiales, nombre } from '@/utils/format';
 
@@ -153,6 +154,7 @@ function FicheUtilisateur({ utilisateur, onFermer, onChange }: { utilisateur: an
       pied={
         utilisateur && (
           <>
+            {st === 1 && <MotDePasseProvisoire utilisateurId={utilisateur.id} nom={nom} />}
             {st === 1 && (
               <Bouton variante="secondaire" icone={UserX} onClick={() => setAction('desactiver')}>
                 Désactiver le compte

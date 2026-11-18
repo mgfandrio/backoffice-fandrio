@@ -18,6 +18,10 @@ export interface Utilisateur {
   compagnie: { id: number; nom: string; logo: string | null; localisation: string | null } | null;
   statut: number;
   photo: string | null;
+  /** Admin compagnie créé par FANDRIO : seul à gérer l'équipe. */
+  admin_principal?: boolean;
+  /** Mot de passe donné par un autre : à changer avant de continuer. */
+  mdp_provisoire?: boolean;
 }
 
 const CLE_TOKEN = 'fandrio.token';

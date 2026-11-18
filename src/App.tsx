@@ -28,6 +28,8 @@ const Remboursements = lazy(() => import('@/pages/compagnie/Remboursements'));
 const Paiements = lazy(() => import('@/pages/compagnie/Paiements'));
 const Parametres = lazy(() => import('@/pages/compagnie/Parametres'));
 const Partenaires = lazy(() => import('@/pages/compagnie/Partenaires'));
+const Equipe = lazy(() => import('@/pages/compagnie/Equipe'));
+const PremierMotDePasse = lazy(() => import('@/pages/PremierMotDePasse'));
 const AccueilSysteme = lazy(() => import('@/pages/systeme/Accueil'));
 const Utilisateurs = lazy(() => import('@/pages/systeme/Utilisateurs'));
 const Compagnies = lazy(() => import('@/pages/systeme/Compagnies'));
@@ -70,6 +72,16 @@ export default function App() {
   return (
     <Routes>
       <Route path="/connexion" element={<Connexion />} />
+      <Route
+        path="/premier-mot-de-passe"
+        element={
+          <Protege>
+            <Chargement>
+              <PremierMotDePasse />
+            </Chargement>
+          </Protege>
+        }
+      />
       <Route
         element={
           <Protege>
@@ -160,6 +172,7 @@ function RoutesCompagnie() {
       <Route path="paiements" element={<Paiements />} />
       <Route path="parametres" element={<Parametres />} />
       <Route path="partenaires" element={<Partenaires />} />
+      <Route path="equipe" element={<Equipe />} />
       {enAttente(MENU_COMPAGNIE, '/compagnie')}
       <Route path="*" element={<Introuvable />} />
     </Routes>

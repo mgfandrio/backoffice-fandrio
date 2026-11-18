@@ -78,6 +78,7 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
     titre: 'Compagnie',
     entrees: [
       { chemin: '/compagnie/parametres', libelle: 'Informations publiques', icone: Settings, etape: 0, contenu: 'Description, contact, adresse, provinces desservies, logo.' },
+      { chemin: '/compagnie/equipe', libelle: 'Équipe', icone: Users, etape: 0, contenu: 'Les personnes qui ont accès au back-office : ajout, désactivation, mot de passe.' },
       { chemin: '/compagnie/partenaires', libelle: 'Compagnies partenaires', icone: Handshake, etape: 0, contenu: 'Ajouter ou retirer les compagnies qui accueillent vos voitures à destination.' },
     ],
   },
