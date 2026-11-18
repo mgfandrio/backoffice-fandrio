@@ -27,6 +27,11 @@ const Paiements = lazy(() => import('@/pages/compagnie/Paiements'));
 const Parametres = lazy(() => import('@/pages/compagnie/Parametres'));
 const Partenaires = lazy(() => import('@/pages/compagnie/Partenaires'));
 const AccueilSysteme = lazy(() => import('@/pages/systeme/Accueil'));
+const Utilisateurs = lazy(() => import('@/pages/systeme/Utilisateurs'));
+const Compagnies = lazy(() => import('@/pages/systeme/Compagnies'));
+const Provinces = lazy(() => import('@/pages/systeme/Provinces'));
+const Commissions = lazy(() => import('@/pages/systeme/Commissions'));
+const Collectes = lazy(() => import('@/pages/systeme/Collectes'));
 const Notifications = lazy(() => import('@/pages/commun/Notifications'));
 const Profil = lazy(() => import('@/pages/commun/Profil'));
 
@@ -159,6 +164,11 @@ function RoutesCompagnie() {
 function RoutesSysteme() {
   return (
     <Routes>
+      <Route path="utilisateurs" element={<Utilisateurs />} />
+      <Route path="compagnies" element={<Compagnies />} />
+      <Route path="provinces" element={<Provinces />} />
+      <Route path="commissions" element={<Commissions />} />
+      <Route path="collectes" element={<Collectes />} />
       {enAttente(MENU_SYSTEME, '/systeme')}
       <Route path="*" element={<Introuvable />} />
     </Routes>

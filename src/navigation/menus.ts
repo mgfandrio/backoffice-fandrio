@@ -88,16 +88,16 @@ export const MENU_SYSTEME: SectionMenu[] = [
     titre: 'Administration',
     entrees: [
       { chemin: '/systeme', libelle: 'Accueil', icone: Home, etape: 0 },
-      { chemin: '/systeme/utilisateurs', libelle: 'Utilisateurs', icone: Users, etape: 4, contenu: 'Liste, détail, désactiver, réactiver, restaurer, supprimer.' },
-      { chemin: '/systeme/compagnies', libelle: 'Compagnies', icone: Building2, etape: 4, contenu: 'Liste, création avec partenaires, fiche : statut, paiement en ligne, offres VIP et Premium, commission.' },
-      { chemin: '/systeme/provinces', libelle: 'Provinces', icone: MapPinned, etape: 4, contenu: 'Liste, ajout simple ou multiple, modification, suppression.' },
+      { chemin: '/systeme/utilisateurs', libelle: 'Utilisateurs', icone: Users, etape: 0, contenu: 'Liste, détail, désactiver, réactiver, restaurer, supprimer.' },
+      { chemin: '/systeme/compagnies', libelle: 'Compagnies', icone: Building2, etape: 0, contenu: 'Liste, création avec partenaires, fiche : statut, paiement en ligne, offres VIP et Premium, commission.' },
+      { chemin: '/systeme/provinces', libelle: 'Provinces', icone: MapPinned, etape: 0, contenu: 'Liste, ajout, modification, suppression.' },
     ],
   },
   {
     titre: 'Finances',
     entrees: [
-      { chemin: '/systeme/commissions', libelle: 'Commissions', icone: PieChart, etape: 4, contenu: 'Tableau de bord, évolution, détail par compagnie, fréquence de collecte.' },
-      { chemin: '/systeme/collectes', libelle: 'Collectes', icone: Landmark, etape: 4, contenu: 'Collectes dues, détail, confirmer la réception, relancer, historique.' },
+      { chemin: '/systeme/commissions', libelle: 'Commissions', icone: PieChart, etape: 0, contenu: 'Tableau de bord, évolution, détail par compagnie, fréquence de collecte.' },
+      { chemin: '/systeme/collectes', libelle: 'Collectes', icone: Landmark, etape: 0, contenu: 'Collectes dues, détail, confirmer la réception, relancer, historique.' },
     ],
   },
 ];
