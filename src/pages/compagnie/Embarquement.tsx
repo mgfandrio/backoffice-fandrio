@@ -473,20 +473,20 @@ export default function Embarquement() {
             ) : (
               <div className="max-h-[560px] overflow-auto">
                 <table className="w-full border-collapse text-left">
-                  <thead className="sticky top-0 bg-[#F8FAFD]">
-                    <tr className="text-[12px] font-extrabold uppercase tracking-wide text-encre-douce">
-                      <th className="border-b border-ligne px-4 py-2.5">Siège</th>
-                      <th className="border-b border-ligne px-4 py-2.5">Voyageur</th>
-                      <th className="border-b border-ligne px-4 py-2.5">Billet</th>
-                      <th className="border-b border-ligne px-4 py-2.5">État</th>
-                      <th className="border-b border-ligne px-4 py-2.5">
+                  <thead className="sticky top-0 bg-ocean-800">
+                    <tr className="text-[12px] font-extrabold uppercase tracking-wide text-white">
+                      <th className="px-4 py-2.5">Siège</th>
+                      <th className="px-4 py-2.5">Voyageur</th>
+                      <th className="px-4 py-2.5">Billet</th>
+                      <th className="px-4 py-2.5">État</th>
+                      <th className="px-4 py-2.5">
                         <span className="sr-only">Action</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {affiches.map((v) => (
-                      <tr key={`${v.reservation_id}-${v.voyageur_id}`} className="text-[14px] hover:bg-[#F8FAFD]">
+                      <tr key={`${v.reservation_id}-${v.voyageur_id}`} className="text-[14px] even:bg-[#F5F8FC] hover:bg-ocean-50">
                         <td className="border-b border-separateur px-4 py-2.5 text-[15px] font-extrabold tabular-nums">{v.siege}</td>
                         <td className="border-b border-separateur px-4 py-2.5 font-bold">{nomVoyageur(v)}</td>
                         <td className="border-b border-separateur px-4 py-2.5">

@@ -6,6 +6,13 @@ import { Carte } from '@/components/ui';
 /** Briques des tableaux de bord : indicateur, panneau titré, tableau. */
 
 type Ton = 'ocean' | 'succes' | 'alerte' | 'danger' | 'neutre';
+const LISERES: Record<Ton, string> = {
+  ocean: 'bg-ocean-800',
+  succes: 'bg-succes-vif',
+  alerte: 'bg-alerte-vif',
+  danger: 'bg-danger',
+  neutre: 'bg-[#9AA9BC]',
+};
 const PUCES: Record<Ton, string> = {
   ocean: 'bg-ocean-50 text-ocean-800',
   succes: 'bg-succes-fond text-succes',
@@ -38,7 +45,8 @@ export function Kpi({
   chargement?: boolean;
 }) {
   return (
-    <Carte marine={marine} className="flex flex-col gap-3 p-5">
+    <Carte marine={marine} className="relative flex flex-col gap-3 overflow-hidden p-5">
+      {!marine && <span aria-hidden className={`absolute inset-x-0 top-0 h-1 ${LISERES[ton]}`} />}
       <div className="flex items-center gap-3">
         <span className={`flex h-10 w-10 flex-none items-center justify-center rounded-xl ${marine ? 'bg-white/10 text-white' : PUCES[ton]}`}>
           <Icone className="h-5 w-5" aria-hidden />
@@ -87,9 +95,9 @@ export function Panneau({
 }) {
   return (
     <Carte className={`flex min-w-0 flex-col overflow-hidden ${className}`}>
-      <div className="flex flex-wrap items-start gap-3 border-b border-separateur px-5 py-4">
-        <div className="min-w-0 flex-1">
-          <h2 className="m-0 text-[16px] font-extrabold text-encre">{titre}</h2>
+      <div className="flex flex-wrap items-start gap-3 border-b border-ligne bg-[#F2F6FB] px-5 py-3.5">
+        <div className="min-w-0 flex-1 border-l-4 border-ocean-800 pl-3">
+          <h2 className="m-0 text-[16px] font-extrabold text-ocean-950">{titre}</h2>
           {sousTitre && <p className="m-0 mt-0.5 text-[13px] font-semibold text-encre-douce">{sousTitre}</p>}
         </div>
         {droite}
@@ -104,25 +112,25 @@ export function Panneau({
   );
 }
 
-/** Tableau lisible : en-têtes contrastés, lignes séparées, défilement horizontal si besoin. */
+/** Tableau lisible : en-tête bleu, lignes alternées et séparées, défilement horizontal si besoin. */
 export function Tableau({ colonnes, children }: { colonnes: { titre: string; droite?: boolean; cache?: boolean }[]; children: ReactNode }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-left">
         <thead>
-          <tr className="bg-[#F8FAFD]">
+          <tr className="bg-ocean-800">
             {colonnes.map((c, i) => (
               <th
                 key={i}
                 scope="col"
-                className={`whitespace-nowrap border-b border-ligne px-4 py-3 text-[12px] font-extrabold uppercase tracking-wide text-encre-douce ${c.droite ? 'text-right' : ''}`}
+                className={`whitespace-nowrap px-4 py-3 text-[12px] font-extrabold uppercase tracking-wide text-white ${c.droite ? 'text-right' : ''}`}
               >
                 {c.cache ? <span className="sr-only">{c.titre}</span> : c.titre}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="text-[14px] text-encre [&>tr:hover]:bg-[#F8FAFD] [&>tr:last-child>td]:border-b-0 [&>tr>td]:border-b [&>tr>td]:border-separateur [&>tr>td]:px-4 [&>tr>td]:py-3">
+        <tbody className="text-[14px] text-encre [&>tr:nth-child(even)]:bg-[#F5F8FC] [&>tr:hover]:bg-ocean-50 [&>tr:last-child>td]:border-b-0 [&>tr>td]:border-b [&>tr>td]:border-ligne [&>tr>td]:px-4 [&>tr>td]:py-3">
           {children}
         </tbody>
       </table>

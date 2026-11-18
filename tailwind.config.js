@@ -9,11 +9,11 @@ export default {
     extend: {
       colors: {
         ocean: { 950: '#062A4A', 800: '#0B4F8A', 500: '#2E8FE0', 300: '#5FB0F2', 200: '#B9D1EA', 100: '#D2E3F3', 50: '#EBF2F9' },
-        fond: '#F4F7FB',
+        fond: '#E9EFF6', // fond de page assez soutenu pour détacher les cartes blanches
         surface: '#FFFFFF',
         encre: { DEFAULT: '#0F1B2D', douce: '#33445C' },
         gris: { DEFAULT: '#5A6B82', clair: '#7A8AA0' },
-        ligne: '#E3EAF2',
+        ligne: '#D5E0EC',
         separateur: '#EEF2F7',
         champ: '#D9E3EE',
         marine: { texte: '#A9C3DE', menu: '#C9D8EA', section: '#7F9BBB' },
