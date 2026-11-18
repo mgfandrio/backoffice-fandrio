@@ -20,7 +20,7 @@ import {
   Ticket,
   UserRound,
   Users,
-  Wallet, BarChart3 } from 'lucide-react';
+  Wallet, BarChart3, Banknote } from 'lucide-react';
 import type { Role } from '@/auth/session';
 
 /**
@@ -49,6 +49,7 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
     entrees: [
       { chemin: '/compagnie', libelle: 'Accueil', icone: Home, etape: 0 },
       { chemin: '/compagnie/guichet', libelle: 'Vente au guichet', icone: Store, etape: 0, contenu: 'Choix du départ, plan des sièges, saisie des voyageurs, encaissement en espèces, ticket imprimé.' },
+      { chemin: '/compagnie/caisse', libelle: 'Caisse du guichet', icone: Banknote, etape: 0, contenu: 'Espèces encaissées par vendeur, clôture du soir, écarts et bon de clôture.' },
       { chemin: '/compagnie/embarquement', libelle: 'Embarquement', icone: QrCode, etape: 0, contenu: 'Lecture des billets à la douchette ou à la caméra, saisie du numéro, liste du voyage, clôture.' },
       { chemin: '/compagnie/reservations', libelle: 'Réservations', icone: Ticket, etape: 0, contenu: 'Réservations par voyage, détail des billets, fiche voyageurs imprimable.' },
       { chemin: '/compagnie/suivi', libelle: 'Suivi des voyages', icone: Navigation, etape: 0, compteur: 'suivi', contenu: 'Départs et arrivées, clôture de l’embarquement, confirmation d’arrivée, retards.' },
