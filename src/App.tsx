@@ -17,6 +17,9 @@ const Reservations = lazy(() => import('@/pages/compagnie/Reservations'));
 const Suivi = lazy(() => import('@/pages/compagnie/Suivi'));
 const Voyages = lazy(() => import('@/pages/compagnie/Voyages'));
 const Planning = lazy(() => import('@/pages/compagnie/Planning'));
+const Chauffeurs = lazy(() => import('@/pages/compagnie/Chauffeurs'));
+const Vehicules = lazy(() => import('@/pages/compagnie/Vehicules'));
+const Trajets = lazy(() => import('@/pages/compagnie/Trajets'));
 const AccueilSysteme = lazy(() => import('@/pages/systeme/Accueil'));
 const Notifications = lazy(() => import('@/pages/commun/Notifications'));
 const Profil = lazy(() => import('@/pages/commun/Profil'));
@@ -132,6 +135,9 @@ function RoutesCompagnie() {
       <Route path="suivi" element={<Suivi />} />
       <Route path="voyages" element={<Voyages />} />
       <Route path="planning" element={<Planning />} />
+      <Route path="chauffeurs" element={<Chauffeurs />} />
+      <Route path="vehicules" element={<Vehicules />} />
+      <Route path="trajets" element={<Trajets />} />
       {enAttente(MENU_COMPAGNIE, '/compagnie')}
       <Route path="*" element={<Introuvable />} />
     </Routes>

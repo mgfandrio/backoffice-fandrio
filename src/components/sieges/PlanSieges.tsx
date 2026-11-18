@@ -16,7 +16,7 @@ type Case = { type: 'chauffeur' } | { type: 'vide' } | { type: 'siege'; code: st
  * Disposition automatique d'un minibus (même règle que l'app mobile), l'avant en haut :
  * chauffeur + 2 places, banquette de 4, rangées de 2 + couloir + 1, banquette arrière de 4.
  */
-function dispositionMinibus(codes: string[]): Case[][] {
+export function dispositionMinibus(codes: string[]): Case[][] {
   const rangees: Case[][] = [];
   let i = 0;
   const prendre = (): Case => (i < codes.length ? { type: 'siege', code: codes[i++] } : { type: 'vide' });

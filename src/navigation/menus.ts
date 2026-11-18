@@ -60,9 +60,9 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
     entrees: [
       { chemin: '/compagnie/voyages', libelle: 'Voyages', icone: Bus, etape: 0, contenu: 'Liste et détail des voyages : plan des sièges en direct, voyageurs, billets, modifier, publier, pause, annuler, reprogrammer, réactiver.' },
       { chemin: '/compagnie/planning', libelle: 'Planning', icone: CalendarDays, etape: 0, compteur: 'planning', contenu: 'Planning à venir et passé, filtres, rappels de publication, planification sur calendrier.' },
-      { chemin: '/compagnie/chauffeurs', libelle: 'Chauffeurs', icone: Users, etape: 3, contenu: 'Ajouter, modifier, activer ou désactiver, supprimer.' },
-      { chemin: '/compagnie/vehicules', libelle: 'Véhicules', icone: Bus, etape: 3, contenu: 'Ajouter, modifier, détail, éditeur du plan de sièges.' },
-      { chemin: '/compagnie/trajets', libelle: 'Trajets', icone: IconeTrajet, etape: 3, contenu: 'Créer, modifier, activer ou désactiver.' },
+      { chemin: '/compagnie/chauffeurs', libelle: 'Chauffeurs', icone: Users, etape: 0, contenu: 'Ajouter, modifier, activer ou désactiver, supprimer.' },
+      { chemin: '/compagnie/vehicules', libelle: 'Véhicules', icone: Bus, etape: 0, contenu: 'Ajouter, modifier, détail, éditeur du plan de sièges.' },
+      { chemin: '/compagnie/trajets', libelle: 'Trajets', icone: IconeTrajet, etape: 0, contenu: 'Créer, modifier, activer ou désactiver.' },
     ],
   },
   {
