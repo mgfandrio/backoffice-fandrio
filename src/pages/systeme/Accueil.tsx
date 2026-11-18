@@ -111,7 +111,7 @@ export default function AccueilSysteme() {
                 <b className="block text-[14px]">{pluriel(suspendues, 'compagnie suspendue', 'compagnies suspendues')}</b>
                 <span className="block text-[13px] font-semibold text-encre-douce">Commission impayée : voyages cachés aux clients</span>
               </span>
-              <Bouton variante="secondaire" compact vers="/systeme/commissions">
+              <Bouton variante="secondaire" compact vers="/systeme/compagnies?statut=suspendues">
                 Voir
               </Bouton>
             </div>
@@ -128,7 +128,7 @@ export default function AccueilSysteme() {
         <Kpi icone={MapPinned} ton="neutre" libelle="Provinces" valeur={nombre(d?.provinces?.total)} detail="desservies par le réseau" chargement={charge} />
       </section>
 
-      <Panneau titre="Commissions des 12 derniers mois" sousTitre="Commission FANDRIO par mois (survolez une barre pour le détail)" lien="/systeme/commissions" libelleLien="Commissions">
+      <Panneau titre="Commissions des 12 derniers mois" sousTitre="Commission FANDRIO par mois (survolez une barre pour le détail)" lien="/systeme/chiffre-affaires" libelleLien="Chiffre d’affaires">
         {charge ? (
           <Squelette className="h-[260px]" />
         ) : evolution.length === 0 ? (

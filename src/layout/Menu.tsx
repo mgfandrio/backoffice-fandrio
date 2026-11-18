@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
-import { useCompteursCompagnie } from '@/api/requetes';
+import { useCompteurControle, useCompteursCompagnie } from '@/api/requetes';
 import { menuDe } from '@/navigation/menus';
 import { initiales } from '@/utils/format';
 import logoFandrio from '@/assets/logo-fandrio.png';
@@ -10,7 +10,8 @@ import logoFandrio from '@/assets/logo-fandrio.png';
 export function Menu({ onNaviguer, onDeconnexion }: { onNaviguer?: () => void; onDeconnexion: () => void }) {
   const { utilisateur } = useAuth();
   const { suivi, planning } = useCompteursCompagnie();
-  const compteurs = { suivi: suivi.data?.total || 0, planning: planning.data?.total || 0 };
+  const controle = useCompteurControle();
+  const compteurs = { suivi: suivi.data?.total || 0, planning: planning.data?.total || 0, controle: controle.data?.total || 0 };
   const sections = menuDe(utilisateur?.role);
   const nom = `${utilisateur?.prenom || ''} ${utilisateur?.nom || ''}`.trim();
   const sousTitre = utilisateur?.role === 3 ? 'Administration' : utilisateur?.compagnie?.nom || 'Ma compagnie';
@@ -42,13 +43,13 @@ export function Menu({ onNaviguer, onDeconnexion }: { onNaviguer?: () => void; o
                   end={e.chemin === '/compagnie' || e.chemin === '/systeme'}
                   onClick={onNaviguer}
                   className={({ isActive }) =>
-                    `flex h-10 items-center gap-[11px] rounded-[11px] px-3 text-[13.5px] transition-colors ${
+                    `flex min-h-10 items-center gap-[11px] rounded-[11px] px-3 py-2 text-[13.5px] transition-colors ${
                       isActive ? 'bg-ocean-800 font-extrabold text-white' : 'font-semibold text-marine-menu hover:bg-white/5 hover:text-white'
                     }`
                   }
                 >
                   <e.icone className="h-[19px] w-[19px] flex-none" aria-hidden />
-                  <span className="truncate">{e.libelle}</span>
+                  <span className="min-w-0 leading-tight">{e.libelle}</span>
                   {n > 0 && (
                     <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-alerte-vif px-1.5 text-[11px] font-extrabold text-[#2B1700]" aria-label={`${n} à traiter`}>
                       {n}

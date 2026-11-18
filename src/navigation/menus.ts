@@ -10,7 +10,6 @@ import {
   LucideIcon,
   MapPinned,
   Navigation,
-  PieChart,
   QrCode,
   Receipt,
   RotateCcw,
@@ -20,7 +19,7 @@ import {
   Ticket,
   UserRound,
   Users,
-  Wallet, BarChart3, Banknote } from 'lucide-react';
+  Wallet, BarChart3, Banknote, ClipboardCheck } from 'lucide-react';
 import type { Role } from '@/auth/session';
 
 /**
@@ -33,7 +32,7 @@ export interface EntreeMenu {
   libelle: string;
   icone: LucideIcon;
   etape: 0 | 2 | 3 | 4;
-  compteur?: 'suivi' | 'planning';
+  compteur?: 'suivi' | 'planning' | 'controle';
   /** Ce que l'écran contiendra (affiché tant qu'il n'est pas livré). */
   contenu?: string;
 }
@@ -97,8 +96,9 @@ export const MENU_SYSTEME: SectionMenu[] = [
   {
     titre: 'Finances',
     entrees: [
-      { chemin: '/systeme/commissions', libelle: 'Commissions', icone: PieChart, etape: 0, contenu: 'Tableau de bord, évolution, détail par compagnie, fréquence de collecte.' },
+      { chemin: '/systeme/chiffre-affaires', libelle: 'Chiffre d’affaires', icone: BarChart3, etape: 0, contenu: 'Ventes en ligne, commission FANDRIO, encaissé et reste à encaisser, par compagnie ; export Excel.' },
       { chemin: '/systeme/collectes', libelle: 'Collectes', icone: Landmark, etape: 0, contenu: 'Collectes dues, détail, confirmer la réception, relancer, historique.' },
+      { chemin: '/systeme/controle-paiements', libelle: 'Paiements à vérifier', icone: ClipboardCheck, etape: 0, compteur: 'controle', contenu: 'Paiements tardifs et voyages annulés à rembourser, billets sans référence de paiement.' },
     ],
   },
 ];

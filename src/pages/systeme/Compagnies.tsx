@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, Building2, Pencil, Plus, Power, Search } from 'lucide-react';
 import { api, messageErreur } from '@/api/client';
@@ -12,9 +13,10 @@ import { etatCollecte, etatCompagnie } from '@/utils/systeme';
 
 /** Compagnies : liste, création (avec partenaires), fiche, options, activation. */
 export default function Compagnies() {
-  const [statut, setStatut] = useState('');
+  const [params] = useSearchParams();
+  const [statut, setStatut] = useState(() => params.get('statut') || '');
   const [recherche, setRecherche] = useState('');
-  const [fiche, setFiche] = useState<number | null>(null);
+  const [fiche, setFiche] = useState<number | null>(() => (params.get('fiche') ? Number(params.get('fiche')) : null));
   const [formulaire, setFormulaire] = useState<{ ouvert: boolean; id: number | null }>({ ouvert: false, id: null });
 
   const stats = useQuery({ queryKey: ['systeme', 'compagnies', 'stats'], queryFn: async () => (await obtenir('/api/admin/compagnies/statistiques')).data });

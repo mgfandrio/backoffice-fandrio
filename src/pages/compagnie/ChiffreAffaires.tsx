@@ -9,78 +9,13 @@ import { Bouton, Carte, Dialogue, Erreur, Selecteur, Squelette, Vide } from '@/c
 import { Barre, Panneau, Tableau } from '@/components/tableau';
 import { DonneesRapport, ImpressionRapport } from '@/components/impression/RapportChiffreAffaires';
 import { ariary, ariaryCourt, dateISO, initiales, nombre, pluriel } from '@/utils/format';
+import { bornes, dateFr, libellePeriode as libelleDePeriode, PERIODES, serie } from '@/utils/periodes';
 
 /**
  * Chiffre d'affaires de la compagnie sur une période au choix :
  * ventes − commission FANDRIO = net, jour par jour, par trajet,
  * par moyen de paiement et par vendeur du guichet ; export Excel et impression.
  */
-
-const PERIODES: Record<string, string> = {
-  ce_mois: 'Ce mois-ci',
-  aujourdhui: 'Aujourd’hui',
-  hier: 'Hier',
-  cette_semaine: 'Cette semaine',
-  mois_dernier: 'Le mois dernier',
-  cette_annee: 'Cette année',
-  dates: 'Choisir les dates…',
-};
-const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-
-/** Bornes (AAAA-MM-JJ) d'une période prédéfinie. */
-function bornes(periode: string): { du: string; au: string } {
-  const auj = new Date();
-  const j = (d: Date) => dateISO(d);
-  switch (periode) {
-    case 'aujourdhui':
-      return { du: j(auj), au: j(auj) };
-    case 'hier': {
-      const h = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() - 1);
-      return { du: j(h), au: j(h) };
-    }
-    case 'cette_semaine': {
-      const lundi = new Date(auj.getFullYear(), auj.getMonth(), auj.getDate() - ((auj.getDay() + 6) % 7));
-      return { du: j(lundi), au: j(auj) };
-    }
-    case 'mois_dernier':
-      return { du: j(new Date(auj.getFullYear(), auj.getMonth() - 1, 1)), au: j(new Date(auj.getFullYear(), auj.getMonth(), 0)) };
-    case 'cette_annee':
-      return { du: j(new Date(auj.getFullYear(), 0, 1)), au: j(auj) };
-    default:
-      return { du: j(new Date(auj.getFullYear(), auj.getMonth(), 1)), au: j(auj) };
-  }
-}
-
-const dateFr = (iso?: string) => (iso ? iso.slice(0, 10).split('-').reverse().join('/') : '');
-const jourCourt = (iso: string) => {
-  const [, m, d] = iso.split('-');
-  return `${Number(d)} ${MOIS_COURTS[Number(m) - 1]}`;
-};
-
-/** Série du graphique : un point par jour (jours sans vente compris), ou par mois au-delà de 62 jours. */
-function serie(parJour: any[], du: string, au: string) {
-  const index = new Map(parJour.map((p) => [p.jour, p]));
-  const jours: { cle: string; libelle: string; guichet: number; en_ligne: number }[] = [];
-  const d = new Date(`${du}T00:00:00`);
-  const fin = new Date(`${au}T00:00:00`);
-  while (d <= fin) {
-    const cle = dateISO(d);
-    const p = index.get(cle);
-    jours.push({ cle, libelle: jourCourt(cle), guichet: Number(p?.guichet || 0), en_ligne: Number(p?.en_ligne || 0) });
-    d.setDate(d.getDate() + 1);
-  }
-  if (jours.length <= 62) return { points: jours, parMois: false };
-  const mois = new Map<string, { cle: string; libelle: string; guichet: number; en_ligne: number }>();
-  jours.forEach((x) => {
-    const cle = x.cle.slice(0, 7);
-    const m = mois.get(cle) || { cle, libelle: `${MOIS_COURTS[Number(cle.slice(5, 7)) - 1]} ${cle.slice(2, 4)}`, guichet: 0, en_ligne: 0 };
-    m.guichet += x.guichet;
-    m.en_ligne += x.en_ligne;
-    mois.set(cle, m);
-  });
-  return { points: [...mois.values()], parMois: true };
-}
 
 function Bulle({ active, payload }: any) {
   if (!active || !payload?.length) return null;
@@ -145,10 +80,10 @@ export default function ChiffreAffaires() {
   const d = q.data;
   const t = d?.totaux;
   const r = d?.remboursements;
-  const graph = useMemo(() => (d ? serie(d.par_jour || [], d.periode.du, d.periode.au) : { points: [], parMois: false }), [d]);
+  const graph = useMemo(() => (d ? serie(d.par_jour || [], d.periode.du, d.periode.au, ['guichet', 'en_ligne']) : { points: [], parMois: false }), [d]);
   const maxPaiement = Math.max(1, ...((d?.par_paiement || []) as any[]).map((p) => Number(p.montant)));
 
-  const libellePeriode = periode === 'dates' ? `du ${dateFr(du)} au ${dateFr(au)}` : periode === 'ce_mois' ? `${MOIS[new Date().getMonth()]} ${new Date().getFullYear()}` : PERIODES[periode].toLowerCase();
+  const libellePeriode = libelleDePeriode(periode, du, au);
   const libelleFiltres = [
     trajet ? (trajets.data || []).find((x) => String(x.id_trajet) === trajet)?.nom_trajet || 'Un trajet' : 'Tous les trajets',
     canal === 'guichet' ? 'Guichet seulement' : canal === 'en_ligne' ? 'En ligne seulement' : 'Guichet et en ligne',

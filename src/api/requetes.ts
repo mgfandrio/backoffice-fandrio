@@ -37,3 +37,14 @@ export function useCompteursCompagnie() {
   });
   return { suivi, planning };
 }
+
+/** Pastille du menu de l'admin système : cas de paiement à vérifier. */
+export function useCompteurControle() {
+  const { utilisateur } = useAuth();
+  return useQuery({
+    queryKey: ['systeme', 'controle-paiements'],
+    queryFn: async () => (await obtenir('/api/admin/controle-paiements')).data,
+    enabled: utilisateur?.role === 3,
+    refetchInterval: 2 * 60_000,
+  });
+}
