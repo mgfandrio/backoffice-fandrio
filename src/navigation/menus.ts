@@ -68,17 +68,17 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
   {
     titre: 'Finances',
     entrees: [
-      { chemin: '/compagnie/portefeuille', libelle: 'Portefeuille', icone: Wallet, etape: 3, contenu: 'Chiffre d’affaires, commission à payer en ligne, historique des collectes.' },
-      { chemin: '/compagnie/factures', libelle: 'Factures', icone: Receipt, etape: 3, contenu: 'Factures des réservations.' },
-      { chemin: '/compagnie/remboursements', libelle: 'Remboursements', icone: RotateCcw, etape: 3, contenu: 'Demandes de remboursement : traiter, refuser.' },
-      { chemin: '/compagnie/paiements', libelle: 'Modes de paiement', icone: CreditCard, etape: 3, contenu: 'Numéros MVola, Orange Money et Airtel Money de la compagnie.' },
+      { chemin: '/compagnie/portefeuille', libelle: 'Portefeuille', icone: Wallet, etape: 0, contenu: 'Chiffre d’affaires, commission à payer en ligne, historique des collectes.' },
+      { chemin: '/compagnie/factures', libelle: 'Factures', icone: Receipt, etape: 0, contenu: 'Factures des réservations.' },
+      { chemin: '/compagnie/remboursements', libelle: 'Remboursements', icone: RotateCcw, etape: 0, contenu: 'Demandes de remboursement : traiter, refuser.' },
+      { chemin: '/compagnie/paiements', libelle: 'Modes de paiement', icone: CreditCard, etape: 0, contenu: 'Numéros MVola, Orange Money et Airtel Money de la compagnie.' },
     ],
   },
   {
     titre: 'Compagnie',
     entrees: [
-      { chemin: '/compagnie/parametres', libelle: 'Informations publiques', icone: Settings, etape: 3, contenu: 'Description, contact, adresse, provinces desservies, logo.' },
-      { chemin: '/compagnie/partenaires', libelle: 'Compagnies partenaires', icone: Handshake, etape: 3, contenu: 'Ajouter ou retirer les compagnies qui accueillent vos voitures à destination.' },
+      { chemin: '/compagnie/parametres', libelle: 'Informations publiques', icone: Settings, etape: 0, contenu: 'Description, contact, adresse, provinces desservies, logo.' },
+      { chemin: '/compagnie/partenaires', libelle: 'Compagnies partenaires', icone: Handshake, etape: 0, contenu: 'Ajouter ou retirer les compagnies qui accueillent vos voitures à destination.' },
     ],
   },
 ];

@@ -20,6 +20,12 @@ const Planning = lazy(() => import('@/pages/compagnie/Planning'));
 const Chauffeurs = lazy(() => import('@/pages/compagnie/Chauffeurs'));
 const Vehicules = lazy(() => import('@/pages/compagnie/Vehicules'));
 const Trajets = lazy(() => import('@/pages/compagnie/Trajets'));
+const Portefeuille = lazy(() => import('@/pages/compagnie/Portefeuille'));
+const Factures = lazy(() => import('@/pages/compagnie/Factures'));
+const Remboursements = lazy(() => import('@/pages/compagnie/Remboursements'));
+const Paiements = lazy(() => import('@/pages/compagnie/Paiements'));
+const Parametres = lazy(() => import('@/pages/compagnie/Parametres'));
+const Partenaires = lazy(() => import('@/pages/compagnie/Partenaires'));
 const AccueilSysteme = lazy(() => import('@/pages/systeme/Accueil'));
 const Notifications = lazy(() => import('@/pages/commun/Notifications'));
 const Profil = lazy(() => import('@/pages/commun/Profil'));
@@ -138,6 +144,12 @@ function RoutesCompagnie() {
       <Route path="chauffeurs" element={<Chauffeurs />} />
       <Route path="vehicules" element={<Vehicules />} />
       <Route path="trajets" element={<Trajets />} />
+      <Route path="portefeuille" element={<Portefeuille />} />
+      <Route path="factures" element={<Factures />} />
+      <Route path="remboursements" element={<Remboursements />} />
+      <Route path="paiements" element={<Paiements />} />
+      <Route path="parametres" element={<Parametres />} />
+      <Route path="partenaires" element={<Partenaires />} />
       {enAttente(MENU_COMPAGNIE, '/compagnie')}
       <Route path="*" element={<Introuvable />} />
     </Routes>
