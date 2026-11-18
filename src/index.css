@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Impression : seule la zone d'impression (ticket, fiche) sort sur le papier */
+#zone-impression {
+  display: none;
+}
+@media print {
+  @page {
+    margin: 0;
+  }
+  body > *:not(#zone-impression) {
+    display: none !important;
+  }
+  #zone-impression {
+    display: block;
+  }
+  body {
+    background: #ffffff !important;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    margin: 0;
+    background: theme('colors.fond');
+    color: theme('colors.encre.DEFAULT');
+    font-family: theme('fontFamily.sans');
+  }
+  /* Couleur des liens simples ; un lien stylé (bouton, menu) la remplace par sa classe */
+  a {
+    color: theme('colors.ocean.800');
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.ocean.500');
+    outline-offset: 2px;
+  }
+}
