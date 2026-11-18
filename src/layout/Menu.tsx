@@ -4,6 +4,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { useCompteursCompagnie } from '@/api/requetes';
 import { menuDe } from '@/navigation/menus';
 import { initiales } from '@/utils/format';
+import logoFandrio from '@/assets/logo-fandrio.png';
 
 /** Menu latéral bleu marine, selon le rôle (maquette « Back-office web »). */
 export function Menu({ onNaviguer, onDeconnexion }: { onNaviguer?: () => void; onDeconnexion: () => void }) {
@@ -20,7 +21,7 @@ export function Menu({ onNaviguer, onDeconnexion }: { onNaviguer?: () => void; o
         {utilisateur?.compagnie?.logo ? (
           <img src={utilisateur.compagnie.logo} alt="" className="h-[38px] w-[38px] rounded-[11px] bg-white object-cover" />
         ) : (
-          <span className="flex h-[38px] w-[38px] items-center justify-center rounded-[11px] bg-ocean-800 text-lg font-extrabold">F</span>
+          <img src={logoFandrio} alt="" className="h-[38px] w-[38px]" />
         )}
         <span className="min-w-0">
           <b className="block text-base tracking-wide">FANDRIO</b>
