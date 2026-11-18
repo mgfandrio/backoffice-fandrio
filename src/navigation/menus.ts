@@ -20,8 +20,7 @@ import {
   Ticket,
   UserRound,
   Users,
-  Wallet,
-} from 'lucide-react';
+  Wallet, BarChart3 } from 'lucide-react';
 import type { Role } from '@/auth/session';
 
 /**
@@ -68,7 +67,8 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
   {
     titre: 'Finances',
     entrees: [
-      { chemin: '/compagnie/portefeuille', libelle: 'Portefeuille', icone: Wallet, etape: 0, contenu: 'Chiffre d’affaires, commission à payer en ligne, historique des collectes.' },
+      { chemin: '/compagnie/chiffre-affaires', libelle: 'Chiffre d’affaires', icone: BarChart3, etape: 0, contenu: 'Ventes, commission et net sur la période choisie, par trajet, paiement et vendeur ; export Excel.' },
+      { chemin: '/compagnie/portefeuille', libelle: 'Portefeuille', icone: Wallet, etape: 0, contenu: 'Commission FANDRIO à payer en ligne et historique des collectes.' },
       { chemin: '/compagnie/factures', libelle: 'Factures', icone: Receipt, etape: 0, contenu: 'Factures des réservations.' },
       { chemin: '/compagnie/remboursements', libelle: 'Remboursements', icone: RotateCcw, etape: 0, contenu: 'Demandes de remboursement : traiter, refuser.' },
       { chemin: '/compagnie/paiements', libelle: 'Modes de paiement', icone: CreditCard, etape: 0, contenu: 'Numéros MVola, Orange Money et Airtel Money de la compagnie.' },

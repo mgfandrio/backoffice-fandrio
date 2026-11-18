@@ -63,7 +63,7 @@ export function Menu({ onNaviguer, onDeconnexion }: { onNaviguer?: () => void; o
 
       <div className="mt-auto pt-4">
         <div className="flex items-center gap-2.5 rounded-xl bg-white/5 p-2.5">
-          <NavLink to="/profil" onClick={onNaviguer} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg" aria-label="Mon profil">
+          <NavLink to="/profil" onClick={onNaviguer} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg text-white no-underline hover:text-white" aria-label="Mon profil">
             {utilisateur?.photo ? (
               <img src={utilisateur.photo} alt="" className="h-[34px] w-[34px] flex-none rounded-[10px] object-cover" />
             ) : (

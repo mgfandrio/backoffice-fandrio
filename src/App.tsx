@@ -20,6 +20,7 @@ const Planning = lazy(() => import('@/pages/compagnie/Planning'));
 const Chauffeurs = lazy(() => import('@/pages/compagnie/Chauffeurs'));
 const Vehicules = lazy(() => import('@/pages/compagnie/Vehicules'));
 const Trajets = lazy(() => import('@/pages/compagnie/Trajets'));
+const ChiffreAffaires = lazy(() => import('@/pages/compagnie/ChiffreAffaires'));
 const Portefeuille = lazy(() => import('@/pages/compagnie/Portefeuille'));
 const Factures = lazy(() => import('@/pages/compagnie/Factures'));
 const Remboursements = lazy(() => import('@/pages/compagnie/Remboursements'));
@@ -149,6 +150,7 @@ function RoutesCompagnie() {
       <Route path="chauffeurs" element={<Chauffeurs />} />
       <Route path="vehicules" element={<Vehicules />} />
       <Route path="trajets" element={<Trajets />} />
+      <Route path="chiffre-affaires" element={<ChiffreAffaires />} />
       <Route path="portefeuille" element={<Portefeuille />} />
       <Route path="factures" element={<Factures />} />
       <Route path="remboursements" element={<Remboursements />} />

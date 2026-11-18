@@ -1,16 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { AlertTriangle, Banknote, CalendarClock, CreditCard, Landmark, Percent, Store, Wallet } from 'lucide-react';
+import { AlertTriangle, Banknote, CalendarClock, CheckCircle2, CreditCard, Landmark, Percent } from 'lucide-react';
 import { api, messageErreur } from '@/api/client';
 import { obtenir } from '@/api/requetes';
 import { Bouton, Dialogue, Erreur, Pastille, Selecteur, Squelette, Vide } from '@/components/ui';
 import { Kpi, Panneau, Tableau } from '@/components/tableau';
-import { ariary, ariaryCourt, nomMois, pluriel } from '@/utils/format';
+import { ariary, ariaryCourt, pluriel } from '@/utils/format';
 
 /**
- * Portefeuille : argent encaissé, commission FANDRIO (5 % des ventes en ligne,
- * rien sur le guichet), collectes à payer en ligne, historique des opérations.
+ * Portefeuille : commission FANDRIO (5 % des ventes en ligne, rien sur le
+ * guichet), collectes à payer en ligne et historique des collectes.
+ * Les ventes et le net sont dans « Chiffre d'affaires ».
  */
 
 const MOIS_COURTS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
@@ -34,12 +35,12 @@ export default function Portefeuille() {
   const collecte = useQuery({ queryKey: ['ma-collecte'], queryFn: async () => (await obtenir('/api/adminCompagnie/reservations/ma-collecte')).data });
 
   const d = porte.data?.pages?.[0];
-  const transactions: any[] = useMemo(() => (porte.data?.pages || []).flatMap((p: any) => p?.transactions || []), [porte.data]);
   const p = d?.par_periode?.[periode] || {};
   const c = collecte.data;
   const aPayer: any[] = (c?.collectes || []).filter((x: any) => x.payable);
-  const operateurs: any[] = d?.repartition_operateur || [];
-  const maxOp = Math.max(...operateurs.map((o) => Number(o.brut) || 0), 1);
+  const totalAPayer = aPayer.reduce((t: number, x: any) => t + (Number(x.montant_commission) || 0), 0);
+  const nbPayees = (c?.collectes || []).filter((x: any) => !x.payable).length;
+  const totalPaye = Number(c?.totaux?.total_collecte) || 0;
 
   const payer = async (coll: any) => {
     setPaiement(coll.coll_id);
@@ -59,6 +60,7 @@ export default function Portefeuille() {
 
   return (
     <div className="flex flex-col gap-5 p-4 sm:px-7 sm:py-6">
+      {(porte.isError || collecte.isError) && <Erreur message={messageErreur(porte.error || collecte.error)} onReessayer={() => { porte.refetch(); collecte.refetch(); }} />}
       {/* Collecte à payer */}
       {c?.suspendu && (
         <div role="alert" className="flex items-start gap-3 rounded-carte border border-danger-bord bg-danger-fond p-4 text-danger">
@@ -84,9 +86,9 @@ export default function Portefeuille() {
         </div>
       ))}
 
-      {/* Indicateurs */}
+      {/* Indicateurs de commission */}
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="m-0 text-[18px] font-extrabold">Encaissements · {PERIODES[periode]}</h2>
+        <h2 className="m-0 text-[18px] font-extrabold">Commission FANDRIO</h2>
         <Selecteur libelle="Période" libelleCache value={periode} onChange={(e) => setPeriode(e.target.value)} className="w-[200px]">
           {Object.entries(PERIODES).map(([k, l]) => (
             <option key={k} value={k}>
@@ -96,68 +98,41 @@ export default function Portefeuille() {
         </Selecteur>
       </div>
       <section className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-        <Kpi marine icone={Wallet} libelle="Net pour la compagnie" valeur={ariary(p.net, false)} unite="Ar" detail={`Ventes ${ariary(p.brut)} − commission ${ariary(p.commission)}`} chargement={porte.isLoading} />
-        <Kpi icone={Banknote} libelle="Ventes encaissées" valeur={ariary(p.brut, false)} unite="Ar" detail={pluriel(Number(p.billets) || 0, 'billet')} chargement={porte.isLoading} />
-        <Kpi icone={Store} libelle="Dont ventes au guichet" valeur={ariary(p.guichet, false)} unite="Ar" detail="Sans commission FANDRIO" chargement={porte.isLoading} />
-        <Kpi icone={Percent} ton="alerte" libelle="Commission FANDRIO" valeur={ariary(p.commission, false)} unite="Ar" detail={`${d?.taux_commission ?? c?.config?.taux ?? 5} % des ventes en ligne`} chargement={porte.isLoading} />
+        <Kpi marine icone={Landmark} libelle="À payer maintenant" valeur={ariary(totalAPayer, false)} unite="Ar" detail={aPayer.length ? pluriel(aPayer.length, 'collecte') + ' en attente' : 'Rien à payer pour le moment'} chargement={collecte.isLoading} />
+        <Kpi icone={CalendarClock} libelle="Prochaine collecte" valeur={c?.prochaine_collecte ? ariary(c.prochaine_collecte.montant, false) : '—'} unite={c?.prochaine_collecte ? 'Ar' : undefined} detail={c?.prochaine_collecte ? `Prévue le ${c.prochaine_collecte.date_prevue}` : `Collecte ${c?.config?.frequence === 'hebdomadaire' ? 'chaque semaine' : 'chaque mois'}`} chargement={collecte.isLoading} />
+        <Kpi icone={Percent} ton="alerte" libelle={`Commission · ${PERIODES[periode].toLowerCase()}`} valeur={ariary(p.commission, false)} unite="Ar" detail={`${d?.taux_commission ?? c?.config?.taux ?? 5} % des ventes en ligne`} chargement={porte.isLoading} />
+        <Kpi icone={CheckCircle2} ton="succes" libelle="Déjà payé à FANDRIO" valeur={ariary(totalPaye, false)} unite="Ar" detail={pluriel(nbPayees, 'collecte réglée', 'collectes réglées')} chargement={collecte.isLoading} />
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-3">
-        <Panneau titre="Ventes et part nette par mois" sousTitre="Les 12 derniers mois" className="xl:col-span-2">
-          {porte.isLoading ? (
-            <Squelette className="h-[240px]" />
-          ) : (d?.evolution_mensuelle || []).length === 0 ? (
-            <Vide icone={Banknote} titre="Pas encore de ventes" />
-          ) : (
-            <div className="h-[240px]" role="img" aria-label="Ventes et part nette par mois">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={d.evolution_mensuelle} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid vertical={false} stroke="#EEF2F7" />
-                  <XAxis dataKey="mois" tickFormatter={libelleMois} tick={{ fill: '#33445C', fontSize: 11, fontWeight: 600 }} tickLine={false} axisLine={{ stroke: '#E3EAF2' }} />
-                  <YAxis tickFormatter={ariaryCourt} tick={{ fill: '#33445C', fontSize: 11, fontWeight: 600 }} tickLine={false} axisLine={false} width={48} />
-                  <Tooltip
-                    cursor={{ fill: '#EBF2F9' }}
-                    content={({ active, payload, label }: any) =>
-                      active && payload?.length ? (
-                        <div className="rounded-xl border border-ligne bg-white px-3 py-2 shadow-lg">
-                          <p className="m-0 text-xs font-bold text-encre-douce">{libelleMois(label)}</p>
-                          <p className="m-0 text-sm font-extrabold tabular-nums">Ventes : {ariary(payload[0].payload.brut)}</p>
-                          <p className="m-0 text-sm font-extrabold tabular-nums text-succes">Net : {ariary(payload[0].payload.net)}</p>
-                          <p className="m-0 text-xs font-semibold tabular-nums text-encre-douce">Commission : {ariary(payload[0].payload.commission)}</p>
-                        </div>
-                      ) : null
-                    }
-                  />
-                  <Bar dataKey="brut" fill="#B9D1EA" radius={[5, 5, 0, 0]} maxBarSize={30} />
-                  <Bar dataKey="net" fill="#0B4F8A" radius={[5, 5, 0, 0]} maxBarSize={30} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </Panneau>
-        <Panneau titre="Par moyen de paiement" sousTitre="Depuis le début">
-          {operateurs.length === 0 ? (
-            <Vide icone={CreditCard} titre="Aucun paiement" />
-          ) : (
-            <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
-              {operateurs.map((o) => (
-                <li key={o.operateur} className="flex flex-col gap-1.5">
-                  <span className="flex justify-between text-[14px]">
-                    <b>{o.operateur}</b>
-                    <b className="tabular-nums">{ariary(o.brut)}</b>
-                  </span>
-                  <span className="block h-2 overflow-hidden rounded-full bg-ocean-50">
-                    <span className="block h-full rounded-full bg-ocean-800" style={{ width: `${(Number(o.brut) / maxOp) * 100}%` }} />
-                  </span>
-                  <span className="text-[12.5px] font-semibold text-encre-douce">
-                    Net {ariary(o.net)} · commission {ariary(o.commission)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panneau>
-      </div>
+      <Panneau titre="Commission par mois" sousTitre="Les 12 derniers mois (survolez une barre pour le détail)" lien="/compagnie/chiffre-affaires" libelleLien="Voir le chiffre d’affaires">
+        {porte.isLoading ? (
+          <Squelette className="h-[220px]" />
+        ) : (d?.evolution_mensuelle || []).length === 0 ? (
+          <Vide icone={Banknote} titre="Pas encore de ventes en ligne" />
+        ) : (
+          <div className="h-[220px]" role="img" aria-label="Commission FANDRIO par mois">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={d.evolution_mensuelle} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid vertical={false} stroke="#EEF2F7" />
+                <XAxis dataKey="mois" tickFormatter={libelleMois} tick={{ fill: '#33445C', fontSize: 11, fontWeight: 600 }} tickLine={false} axisLine={{ stroke: '#E3EAF2' }} />
+                <YAxis tickFormatter={ariaryCourt} tick={{ fill: '#33445C', fontSize: 11, fontWeight: 600 }} tickLine={false} axisLine={false} width={48} />
+                <Tooltip
+                  cursor={{ fill: '#EBF2F9' }}
+                  content={({ active, payload, label }: any) =>
+                    active && payload?.length ? (
+                      <div className="rounded-xl border border-ligne bg-white px-3 py-2 shadow-lg">
+                        <p className="m-0 text-xs font-bold text-encre-douce">{libelleMois(label)}</p>
+                        <p className="m-0 text-sm font-extrabold tabular-nums">Commission : {ariary(payload[0].payload.commission)}</p>
+                      </div>
+                    ) : null
+                  }
+                />
+                <Bar dataKey="commission" fill="#E4A13A" radius={[5, 5, 0, 0]} maxBarSize={30} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </Panneau>
 
       {/* Collectes */}
       <Panneau
@@ -191,44 +166,7 @@ export default function Portefeuille() {
         )}
       </Panneau>
 
-      {/* Opérations */}
-      <Panneau titre="Opérations" sousTitre={d?.pagination ? `${pluriel(Number(d.pagination.total) || 0, 'vente')} payée${Number(d.pagination.total) > 1 ? 's' : ''}` : undefined} sansMarge>
-        {porte.isLoading ? (
-          <div className="flex flex-col gap-2 p-5">{[0, 1, 2].map((i) => <Squelette key={i} className="h-10" />)}</div>
-        ) : porte.isError ? (
-          <div className="p-5">
-            <Erreur message={messageErreur(porte.error)} onReessayer={() => porte.refetch()} />
-          </div>
-        ) : transactions.length === 0 ? (
-          <Vide icone={Wallet} titre="Aucune opération" />
-        ) : (
-          <Tableau colonnes={[{ titre: 'Date' }, { titre: 'Billet' }, { titre: 'Client' }, { titre: 'Trajet' }, { titre: 'Paiement' }, { titre: 'Ventes', droite: true }, { titre: 'Commission', droite: true }, { titre: 'Net', droite: true }]}>
-            {transactions.map((t) => (
-              <tr key={t.res_id}>
-                <td className="whitespace-nowrap font-semibold tabular-nums text-encre-douce">{t.date}</td>
-                <td className="whitespace-nowrap font-bold tabular-nums">{t.res_numero}</td>
-                <td className="font-semibold">{t.client || '—'}</td>
-                <td className="whitespace-nowrap font-semibold">{t.trajet || '—'}</td>
-                <td>
-                  <Pastille libelle={t.canal === 'guichet' ? 'Espèces' : t.operateur} tonalite={t.canal === 'guichet' ? 'neutre' : 'info'} point={false} />
-                </td>
-                <td className="whitespace-nowrap text-right font-semibold tabular-nums">{ariary(t.brut)}</td>
-                <td className="whitespace-nowrap text-right font-semibold tabular-nums text-encre-douce">{t.commission ? `− ${ariary(t.commission)}` : '—'}</td>
-                <td className="whitespace-nowrap text-right font-extrabold tabular-nums">{ariary(t.net)}</td>
-              </tr>
-            ))}
-          </Tableau>
-        )}
-        {porte.hasNextPage && (
-          <div className="border-t border-separateur p-3 text-center">
-            <Bouton variante="lien" onClick={() => porte.fetchNextPage()} chargement={porte.isFetchingNextPage}>
-              Afficher plus d’opérations
-            </Bouton>
-          </div>
-        )}
-      </Panneau>
-
-      <p className="m-0 text-[13px] font-semibold text-encre-douce">Mois en cours : {nomMois()}. La commission FANDRIO ne s’applique pas aux ventes au guichet.</p>
+      <p className="m-0 text-[13px] font-semibold text-encre-douce">La commission FANDRIO ne s’applique pas aux ventes au guichet. Vos ventes, votre net et l’export Excel sont dans « Chiffre d’affaires ».</p>
       <Dialogue ouvert={!!message} titre={message?.titre || ''} onFermer={() => setMessage(null)}>
         {message?.texte}
       </Dialogue>
