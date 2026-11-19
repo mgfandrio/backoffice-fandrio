@@ -9,9 +9,9 @@ import logoFandrio from '@/assets/logo-fandrio.png';
 /** Menu latéral bleu marine, selon le rôle (maquette « Back-office web »). */
 export function Menu({ onNaviguer, onDeconnexion }: { onNaviguer?: () => void; onDeconnexion: () => void }) {
   const { utilisateur } = useAuth();
-  const { suivi, planning } = useCompteursCompagnie();
+  const { suivi, planning, versements } = useCompteursCompagnie();
   const controle = useCompteurControle();
-  const compteurs = { suivi: suivi.data?.total || 0, planning: planning.data?.total || 0, controle: controle.data?.total || 0 };
+  const compteurs = { suivi: suivi.data?.total || 0, planning: planning.data?.total || 0, controle: controle.data?.total || 0, versements: versements.data?.retard || 0 };
   const sections = menuDe(utilisateur?.role);
   const nom = `${utilisateur?.prenom || ''} ${utilisateur?.nom || ''}`.trim();
   const sousTitre = utilisateur?.role === 3 ? 'Administration' : utilisateur?.compagnie?.nom || 'Ma compagnie';

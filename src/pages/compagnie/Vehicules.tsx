@@ -7,7 +7,7 @@ import { Bouton, Carte, Champ, Dialogue, Erreur, Pastille, Selecteur, Squelette,
 import { Tableau } from '@/components/tableau';
 import { LegendePlan, PlanSieges } from '@/components/sieges/PlanSieges';
 import { EditeurPlan } from '@/components/flotte/EditeurPlan';
-import { pluriel } from '@/utils/format';
+import { ariary, pluriel } from '@/utils/format';
 
 /** Véhicules : ajouter, modifier, rendre disponible ou non, plan de sièges. */
 
@@ -65,7 +65,7 @@ export default function Vehicules() {
             {liste.length ? 'Modifiez le filtre ou la recherche.' : 'Ajoutez vos véhicules pour programmer des voyages.'}
           </Vide>
         ) : (
-          <Tableau colonnes={[{ titre: 'Véhicule' }, { titre: 'Catégorie' }, { titre: 'Places', droite: true }, { titre: 'Chauffeur attitré' }, { titre: 'État' }, { titre: 'Action', cache: true }]}>
+          <Tableau colonnes={[{ titre: 'Véhicule' }, { titre: 'Catégorie' }, { titre: 'Places', droite: true }, { titre: 'Chauffeur attitré' }, { titre: 'Propriétaire' }, { titre: 'État' }, { titre: 'Action', cache: true }]}>
             {affiches.map((v) => (
               <tr key={v.voit_id}>
                 <td>
@@ -75,6 +75,7 @@ export default function Vehicules() {
                 <td className="font-semibold">{CATEGORIES[v.voit_categorie || 'classique']}</td>
                 <td className="text-right font-bold tabular-nums">{v.voit_places}</td>
                 <td className={`font-semibold ${v.chauffeur ? '' : 'text-alerte'}`}>{nomChauffeur(v.chauffeur) || 'Aucun chauffeur'}</td>
+                <td>{Number(v.voit_proprietaire) === 2 ? <Pastille libelle={`Particulier · ${String(v.voit_taux_compagnie ?? '').replace('.', ',')} %`} tonalite="info" /> : <span className="text-[13px] font-semibold text-encre-douce">Compagnie</span>}</td>
                 <td>{Number(v.voit_statut) === 1 ? <Pastille libelle="Disponible" tonalite="succes" /> : <Pastille libelle="Indisponible" tonalite="neutre" />}</td>
                 <td className="text-right">
                   <Bouton variante="secondaire" compact onClick={() => setDetail(v)}>
@@ -210,7 +211,7 @@ function DetailVehicule({ voiture, onFermer, onModifier }: { voiture: any; onFer
 function FormulaireVehicule({ ouvert, voiture, voitures, onFermer }: { ouvert: boolean; voiture: any | null; voitures: any[]; onFermer: () => void }) {
   const queryClient = useQueryClient();
   const edition = !!voiture;
-  const [f, setF] = useState({ marque: '', modele: '', matricule: '', places: '16', categorie: 'classique', chauffId: '', statut: '1' });
+  const [f, setF] = useState({ marque: '', modele: '', matricule: '', places: '16', categorie: 'classique', chauffId: '', statut: '1', proprietaire: '1', taux: '' });
   const [erreurs, setErreurs] = useState<Record<string, string>>({});
   const [envoi, setEnvoi] = useState(false);
   const [message, setMessage] = useState<{ titre: string; texte: string; ok?: boolean } | null>(null);
@@ -223,8 +224,8 @@ function FormulaireVehicule({ ouvert, voiture, voitures, onFermer }: { ouvert: b
     setErreurs({});
     setF(
       voiture
-        ? { marque: voiture.voit_marque || '', modele: voiture.voit_modele || '', matricule: voiture.voit_matricule || '', places: String(voiture.voit_places || ''), categorie: voiture.voit_categorie || 'classique', chauffId: voiture.chauff_id ? String(voiture.chauff_id) : '', statut: Number(voiture.voit_statut) === 1 ? '1' : '2' }
-        : { marque: '', modele: '', matricule: '', places: '16', categorie: 'classique', chauffId: '', statut: '1' }
+        ? { marque: voiture.voit_marque || '', modele: voiture.voit_modele || '', matricule: voiture.voit_matricule || '', places: String(voiture.voit_places || ''), categorie: voiture.voit_categorie || 'classique', chauffId: voiture.chauff_id ? String(voiture.chauff_id) : '', statut: Number(voiture.voit_statut) === 1 ? '1' : '2', proprietaire: Number(voiture.voit_proprietaire) === 2 ? '2' : '1', taux: voiture.voit_taux_compagnie != null ? String(voiture.voit_taux_compagnie).replace('.', ',') : '' }
+        : { marque: '', modele: '', matricule: '', places: '16', categorie: 'classique', chauffId: '', statut: '1', proprietaire: '1', taux: '' }
     );
   }, [ouvert, voiture]);
 
@@ -239,9 +240,11 @@ function FormulaireVehicule({ ouvert, voiture, voitures, onFermer }: { ouvert: b
     const n = Number(f.places);
     if (!n || n < 1 || n > 70) e.places = 'Entre 1 et 70 places.';
     if (!f.chauffId) e.chauffId = 'Choisissez le chauffeur attitré.';
+    const taux = Number(String(f.taux).replace(',', '.'));
+    if (f.proprietaire === '2' && (f.taux === '' || Number.isNaN(taux) || taux < 0 || taux > 100)) e.taux = 'Un pourcentage entre 0 et 100.';
     setErreurs(e);
     if (Object.keys(e).length) return;
-    const data = { voit_marque: f.marque.trim(), voit_modele: f.modele.trim(), voit_matricule: f.matricule.trim().toUpperCase(), voit_places: n, voit_statut: Number(f.statut), voit_categorie: f.categorie, chauff_id: Number(f.chauffId) };
+    const data = { voit_marque: f.marque.trim(), voit_modele: f.modele.trim(), voit_matricule: f.matricule.trim().toUpperCase(), voit_places: n, voit_statut: Number(f.statut), voit_categorie: f.categorie, chauff_id: Number(f.chauffId), voit_proprietaire: Number(f.proprietaire), voit_taux_compagnie: f.proprietaire === '2' ? taux : null };
     setEnvoi(true);
     try {
       if (edition) await api.put(`/api/adminCompagnie/voiture/modification/${voiture.voit_id}`, data);
@@ -304,6 +307,41 @@ function FormulaireVehicule({ ouvert, voiture, voitures, onFermer }: { ouvert: b
             );
           })}
         </Selecteur>
+
+        <fieldset className="m-0 flex flex-col gap-2.5 rounded-xl border border-ligne p-3.5">
+          <legend className="px-1 text-[13.5px] font-extrabold">À qui appartient cette voiture ?</legend>
+          {[
+            ['1', 'À la compagnie', 'Toute la recette revient à la compagnie. Pas de versement.'],
+            ['2', 'À un particulier', 'La compagnie prend un pourcentage sur chaque siège vendu ; le reste revient au chauffeur.'],
+          ].map(([v, titre, detail]) => (
+            <label key={v} className={`flex cursor-pointer items-start gap-3 rounded-xl border-[1.5px] p-3 ${f.proprietaire === v ? 'border-ocean-800 bg-ocean-50' : 'border-champ bg-white'}`}>
+              <input type="radio" name="proprietaire" value={v} checked={f.proprietaire === v} onChange={() => setF({ ...f, proprietaire: v })} className="mt-0.5 h-5 w-5 accent-ocean-800" />
+              <span>
+                <b className="block text-[14px]">{titre}</b>
+                <span className="text-[12.5px] font-semibold text-encre-douce">{detail}</span>
+              </span>
+            </label>
+          ))}
+          {f.proprietaire === '2' && (
+            <>
+              <Champ
+                libelle="Pourcentage pris par la compagnie (%)"
+                inputMode="decimal"
+                value={f.taux}
+                erreur={erreurs.taux}
+                placeholder="Ex. : 10"
+                onChange={(e) => setF({ ...f, taux: e.target.value.replace(/[^\d.,]/g, '').slice(0, 5) })}
+                aide={edition ? 'Un nouveau pourcentage s’applique aux voyages pas encore partis.' : 'Calculé après la commission FANDRIO de 5 % sur les ventes en ligne.'}
+              />
+              {f.taux !== '' && !Number.isNaN(Number(f.taux.replace(',', '.'))) && (
+                <p className="m-0 rounded-xl bg-fond px-3 py-2.5 text-[12.5px] font-semibold text-encre-douce">
+                  Exemple, siège à 25 000 Ar vendu au guichet : compagnie {ariary(Math.round(25000 * Number(f.taux.replace(',', '.')) / 100))}, chauffeur{' '}
+                  <b className="text-encre">{ariary(25000 - Math.round(25000 * Number(f.taux.replace(',', '.')) / 100))}</b>.
+                </p>
+              )}
+            </>
+          )}
+        </fieldset>
       </div>
       <Dialogue
         ouvert={!!message}

@@ -13,6 +13,7 @@ import Introuvable from '@/pages/Introuvable';
 const AccueilCompagnie = lazy(() => import('@/pages/compagnie/Accueil'));
 const Guichet = lazy(() => import('@/pages/compagnie/Guichet'));
 const Caisse = lazy(() => import('@/pages/compagnie/Caisse'));
+const Versements = lazy(() => import('@/pages/compagnie/Versements'));
 const Embarquement = lazy(() => import('@/pages/compagnie/Embarquement'));
 const Reservations = lazy(() => import('@/pages/compagnie/Reservations'));
 const Suivi = lazy(() => import('@/pages/compagnie/Suivi'));
@@ -157,6 +158,7 @@ function RoutesCompagnie() {
     <Routes>
       <Route path="guichet" element={<Guichet />} />
       <Route path="caisse" element={<Caisse />} />
+      <Route path="versements" element={<Versements />} />
       <Route path="embarquement" element={<Embarquement />} />
       <Route path="reservations" element={<Reservations />} />
       <Route path="suivi" element={<Suivi />} />

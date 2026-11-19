@@ -19,7 +19,7 @@ import {
   Ticket,
   UserRound,
   Users,
-  Wallet, BarChart3, Banknote, ClipboardCheck } from 'lucide-react';
+  Wallet, BarChart3, Banknote, ClipboardCheck, ArrowLeftRight } from 'lucide-react';
 import type { Role } from '@/auth/session';
 
 /**
@@ -32,7 +32,7 @@ export interface EntreeMenu {
   libelle: string;
   icone: LucideIcon;
   etape: 0 | 2 | 3 | 4;
-  compteur?: 'suivi' | 'planning' | 'controle';
+  compteur?: 'suivi' | 'planning' | 'controle' | 'versements';
   /** Ce que l'écran contiendra (affiché tant qu'il n'est pas livré). */
   contenu?: string;
 }
@@ -68,6 +68,7 @@ export const MENU_COMPAGNIE: SectionMenu[] = [
     titre: 'Finances',
     entrees: [
       { chemin: '/compagnie/chiffre-affaires', libelle: 'Chiffre d’affaires', icone: BarChart3, etape: 0, contenu: 'Ventes, commission et net sur la période choisie, par trajet, paiement et vendeur ; export Excel.' },
+      { chemin: '/compagnie/versements', libelle: 'Versements', icone: ArrowLeftRight, etape: 0, compteur: 'versements', contenu: 'Part des chauffeurs des voitures de particuliers, voyage par voyage : marquer comme réglé.' },
       { chemin: '/compagnie/portefeuille', libelle: 'Portefeuille', icone: Wallet, etape: 0, contenu: 'Commission FANDRIO à payer en ligne et historique des collectes.' },
       { chemin: '/compagnie/factures', libelle: 'Factures', icone: Receipt, etape: 0, contenu: 'Factures des réservations.' },
       { chemin: '/compagnie/remboursements', libelle: 'Remboursements', icone: RotateCcw, etape: 0, contenu: 'Demandes de remboursement : traiter, refuser.' },

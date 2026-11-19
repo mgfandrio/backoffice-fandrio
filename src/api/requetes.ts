@@ -35,7 +35,13 @@ export function useCompteursCompagnie() {
     enabled: actif,
     refetchInterval: 5 * 60_000,
   });
-  return { suivi, planning };
+  const versements = useQuery({
+    queryKey: ['versements', 'compteur'],
+    queryFn: async () => (await obtenir('/api/adminCompagnie/versements/compteur')).data as { retard: number },
+    enabled: actif,
+    refetchInterval: 5 * 60_000,
+  });
+  return { suivi, planning, versements };
 }
 
 /** Pastille du menu de l'admin système : cas de paiement à vérifier. */
