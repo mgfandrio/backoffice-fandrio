@@ -10,7 +10,7 @@ export interface SiegePlan {
 /** Disposition dessinée par la compagnie : rangées de 'C' (chauffeur), '' (vide) ou numéros. */
 export type GrillePlan = string[][];
 
-type Case = { type: 'chauffeur' } | { type: 'vide' } | { type: 'siege'; code: string };
+export type Case = { type: 'chauffeur' } | { type: 'vide' } | { type: 'siege'; code: string };
 
 /**
  * Disposition automatique d'un minibus (même règle que l'app mobile), l'avant en haut :
@@ -36,7 +36,7 @@ export function dispositionMinibus(codes: string[]): Case[][] {
   return rangees;
 }
 
-function dispositionGrille(grille: GrillePlan): Case[][] {
+export function dispositionGrille(grille: GrillePlan): Case[][] {
   return grille.map((r) => r.map((c): Case => (c === 'C' ? { type: 'chauffeur' } : c ? { type: 'siege', code: String(c) } : { type: 'vide' })));
 }
 

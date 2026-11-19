@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { CalendarClock, Eye, EyeOff, FileText, Flag, Navigation, Pause, Pencil, Play, QrCode, RotateCcw, XCircle } from 'lucide-react';
+import { CalendarClock, Eye, EyeOff, FileText, Flag, Navigation, Pause, Pencil, Play, QrCode, RotateCcw, XCircle, Printer } from 'lucide-react';
 import { api, messageErreur } from '@/api/client';
 import { obtenir } from '@/api/requetes';
 import { useSiegesEnDirect } from '@/api/tempsReel';
@@ -8,7 +8,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { Bouton, Carte, Champ, Dialogue, Erreur, Pastille, Squelette, Tiroir, Vide } from '@/components/ui';
 import { Tableau } from '@/components/tableau';
 import { LegendePlan, PlanSieges, SiegePlan } from '@/components/sieges/PlanSieges';
-import { DonneesFiche, ImpressionFiche } from '@/components/impression/FicheVoyageurs';
+import { DonneesFiche, ImpressionFiche, telechargerFichePdf } from '@/components/impression/FicheVoyageurs';
 import { ariary, dateISO, heure, jourRelatif, lireDate } from '@/utils/format';
 import { chauffeurDe, dateHeureCourte, estEnPause, estNonPublie, etatVoyage, libelleType, publicationPrevue, statutValeur, trajetDe } from '@/utils/voyage';
 
@@ -109,18 +109,31 @@ export function DetailVoyage({ voyageId, apercu, onFermer, onModifier }: { voyag
     }
   };
 
-  const imprimerFiche = () => {
+  /** Fiche voyageurs (plan de la voiture + liste) : PDF téléchargé ou impression. */
+  const [prepaFiche, setPrepaFiche] = useState(false);
+  const imprimerFiche = async (mode: 'pdf' | 'imprimer') => {
     const liste = voyageurs.data?.voyageurs || [];
     if (!liste.length) return setMessage({ titre: 'Aucun voyageur', texte: 'Ce voyage ne contient aucun voyageur enregistré.' });
-    setFiche({
-      compagnie: utilisateur?.compagnie?.nom || '',
-      trajet: trajetDe(v),
-      date: lireDate(v.date)?.toLocaleDateString('fr-FR') || '',
-      heure: String(v.heure_depart || ''),
-      vehicule: v.voiture ? `${v.voiture.matricule} (${[v.voiture.marque, v.voiture.modele].filter(Boolean).join(' ')})` : null,
-      chauffeur: chauffeurDe(v) || null,
-      voyageurs: liste,
-    });
+    setPrepaFiche(true);
+    try {
+      const p = plan.data || (await obtenir(`/api/adminCompagnie/reservations/voyages/${voyageId}/plan-sieges`).catch(() => null))?.data;
+      const donnees: DonneesFiche = {
+        compagnie: utilisateur?.compagnie?.nom || '',
+        trajet: trajetDe(v),
+        date: lireDate(v.date)?.toLocaleDateString('fr-FR') || '',
+        heure: String(v.heure_depart || ''),
+        vehicule: v.voiture ? `${v.voiture.matricule} (${[v.voiture.marque, v.voiture.modele].filter(Boolean).join(' ')})` : null,
+        chauffeur: chauffeurDe(v) || p?.voiture?.chauffeur || null,
+        voyageurs: liste,
+        plan: p?.plan ? { codes: p.plan.map((s: any) => String(s.code)), grille: p.grille || null } : null,
+      };
+      if (mode === 'pdf') await telechargerFichePdf(donnees);
+      else setFiche(donnees);
+    } catch (err) {
+      setMessage({ titre: 'Fiche indisponible', texte: messageErreur(err) });
+    } finally {
+      setPrepaFiche(false);
+    }
   };
   const finFiche = useCallback(() => setFiche(null), []);
 
@@ -163,8 +176,11 @@ export function DetailVoyage({ voyageId, apercu, onFermer, onModifier }: { voyag
               Embarquement
             </Bouton>
           )}
-          <Bouton variante="secondaire" icone={FileText} onClick={imprimerFiche}>
-            Fiche voyageurs
+          <Bouton variante="secondaire" icone={FileText} chargement={prepaFiche} onClick={() => imprimerFiche('pdf')}>
+            Fiche voyageurs (PDF)
+          </Bouton>
+          <Bouton variante="secondaire" icone={Printer} disabled={prepaFiche} onClick={() => imprimerFiche('imprimer')}>
+            Imprimer la fiche
           </Bouton>
           {(statut === 3 || statut === 4) && (
             <Bouton variante="secondaire" icone={CalendarClock} onClick={() => setAction('reprogrammer')}>

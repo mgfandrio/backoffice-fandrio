@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { Banknote, FileText, QrCode, Search, Ticket, Users } from 'lucide-react';
+import { Banknote, FileText, QrCode, Search, Ticket, Users, Printer } from 'lucide-react';
 import { messageErreur } from '@/api/client';
 import { obtenir } from '@/api/requetes';
 import { useAuth } from '@/auth/AuthContext';
 import { Bouton, Carte, Dialogue, Erreur, Pastille, Squelette, Vide } from '@/components/ui';
 import { Tiroir } from '@/components/ui/Tiroir';
 import { Barre, Kpi, Tableau } from '@/components/tableau';
-import { DonneesFiche, ImpressionFiche } from '@/components/impression/FicheVoyageurs';
+import { DonneesFiche, donneesFiche, ImpressionFiche, telechargerFichePdf } from '@/components/impression/FicheVoyageurs';
 import { ariary, dateISO, heure, nombre, pluriel } from '@/utils/format';
 
 /**
@@ -48,24 +48,26 @@ export default function Reservations() {
     return voyages.filter((v) => `${v.trajet?.province_depart} ${v.trajet?.province_arrivee} ${v.voiture?.matricule} ${v.date}`.toLowerCase().includes(q));
   }, [voyages, recherche]);
 
-  const imprimerFiche = async (v: any) => {
+  /** Fiche voyageurs (plan de la voiture + liste) : PDF téléchargé ou impression. */
+  const imprimerFiche = async (v: any, mode: 'pdf' | 'imprimer' = 'pdf') => {
     setPreparation(v.voyage_id);
     try {
-      const r = await obtenir(`/api/adminCompagnie/reservations/voyages/${v.voyage_id}/voyageurs`);
-      const liste = r?.data?.voyageurs || [];
-      if (!liste.length) {
+      const [r, plan] = await Promise.all([
+        obtenir(`/api/adminCompagnie/reservations/voyages/${v.voyage_id}/voyageurs`),
+        obtenir(`/api/adminCompagnie/reservations/voyages/${v.voyage_id}/plan-sieges`).catch(() => null),
+      ]);
+      if (!(r?.data?.voyageurs || []).length) {
         setMessage({ titre: 'Aucun voyageur', texte: 'Ce voyage ne contient aucun voyageur enregistré.' });
         return;
       }
-      setFiche({
-        compagnie: utilisateur?.compagnie?.nom || '',
-        trajet: r.data.voyage?.trajet || `${v.trajet?.province_depart} → ${v.trajet?.province_arrivee}`,
-        date: r.data.voyage?.date || v.date,
-        heure: String(r.data.voyage?.heure || v.heure_depart || ''),
+      const donnees = donneesFiche(utilisateur?.compagnie?.nom || '', r.data, plan?.data, {
+        trajet: `${v.trajet?.province_depart} → ${v.trajet?.province_arrivee}`,
+        date: v.date,
+        heure: v.heure_depart,
         vehicule: v.voiture ? `${v.voiture.matricule} (${[v.voiture.marque, v.voiture.modele].filter(Boolean).join(' ')})` : null,
-        chauffeur: null,
-        voyageurs: liste,
       });
+      if (mode === 'pdf') await telechargerFichePdf(donnees);
+      else setFiche(donnees);
     } catch (e) {
       setMessage({ titre: 'Fiche indisponible', texte: messageErreur(e) });
     } finally {
@@ -159,8 +161,8 @@ export default function Reservations() {
                   <td className="whitespace-nowrap text-right font-extrabold tabular-nums">{ariary(v.revenu_total)}</td>
                   <td>
                     <span className="flex justify-end gap-2">
-                      <Bouton variante="secondaire" compact icone={FileText} onClick={() => imprimerFiche(v)} chargement={preparation === v.voyage_id} title="Imprimer la fiche voyageurs (contrôles routiers)">
-                        Fiche
+                      <Bouton variante="secondaire" compact icone={FileText} onClick={() => imprimerFiche(v, 'pdf')} chargement={preparation === v.voyage_id} title="Télécharger la fiche voyageurs en PDF : plan de la voiture et liste (contrôles routiers)">
+                        PDF
                       </Bouton>
                       <Bouton compact onClick={() => setDetail(v)}>
                         Billets
@@ -191,7 +193,7 @@ export default function Reservations() {
 }
 
 /** Billets d'un voyage (panneau latéral). */
-function DetailBillets({ voyage, onFermer, onFiche }: { voyage: any; onFermer: () => void; onFiche: (v: any) => void }) {
+function DetailBillets({ voyage, onFermer, onFiche }: { voyage: any; onFermer: () => void; onFiche: (v: any, mode: 'pdf' | 'imprimer') => void }) {
   const billets = useQuery({
     queryKey: ['reservations', 'billets', voyage?.voyage_id],
     queryFn: async () => (await obtenir(`/api/adminCompagnie/reservations/voyages/${voyage.voyage_id}/billets`)).data,
@@ -209,8 +211,11 @@ function DetailBillets({ voyage, onFermer, onFiche }: { voyage: any; onFermer: (
       pied={
         voyage && (
           <>
-            <Bouton variante="secondaire" icone={FileText} onClick={() => onFiche(voyage)}>
-              Fiche voyageurs
+            <Bouton variante="secondaire" icone={FileText} onClick={() => onFiche(voyage, 'pdf')}>
+              Fiche voyageurs (PDF)
+            </Bouton>
+            <Bouton variante="secondaire" icone={Printer} onClick={() => onFiche(voyage, 'imprimer')}>
+              Imprimer
             </Bouton>
             {auj && (
               <Bouton icone={QrCode} vers={`/compagnie/embarquement?voyage=${voyage.voyage_id}`}>
