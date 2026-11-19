@@ -177,6 +177,12 @@ export default function ChiffreAffaires() {
                 />
                 <Signe s="−" />
                 <Terme libelle="Commission FANDRIO" valeur={ariary(t.commission, false)} couleur="text-alerte" detail={`${d.taux_commission} % des ventes en ligne seulement`} />
+                {t.part_chauffeurs > 0 && (
+                  <>
+                    <Signe s="−" />
+                    <Terme libelle="Part des chauffeurs" valeur={ariary(t.part_chauffeurs, false)} couleur="text-alerte" detail="Voitures de particuliers (voir « Versements »)" />
+                  </>
+                )}
                 <Signe s="=" />
                 <Terme marine libelle="Net pour la compagnie" valeur={ariary(t.net, false)} detail={`${pluriel(t.billets, 'billet')} vendus · ${pluriel(t.voyages, 'voyage')}`} />
                 <Carte className="flex min-w-[220px] flex-1 flex-col justify-center gap-1 border-dashed p-[18px]">
@@ -231,7 +237,7 @@ export default function ChiffreAffaires() {
             ) : !(d.par_trajet || []).length ? (
               <Vide icone={BarChart3} titre="Aucune vente sur cette période" />
             ) : (
-              <Tableau colonnes={[{ titre: 'Trajet' }, { titre: 'Voyages', droite: true }, { titre: 'Billets', droite: true }, { titre: 'Remplissage moyen' }, { titre: 'Guichet', droite: true }, { titre: 'En ligne', droite: true }, { titre: 'Total', droite: true }]}>
+              <Tableau colonnes={[{ titre: 'Trajet' }, { titre: 'Voyages', droite: true }, { titre: 'Billets', droite: true }, { titre: 'Remplissage moyen' }, { titre: 'Guichet', droite: true }, { titre: 'En ligne', droite: true }, { titre: 'Total', droite: true }, ...(t?.part_chauffeurs > 0 ? [{ titre: 'Part chauffeurs', droite: true }] : [])]}>
                 {d.par_trajet.map((x: any) => (
                   <tr key={x.traj_id}>
                     <td>
@@ -251,6 +257,7 @@ export default function ChiffreAffaires() {
                     <td className="whitespace-nowrap text-right tabular-nums">{ariary(x.guichet)}</td>
                     <td className="whitespace-nowrap text-right tabular-nums">{ariary(x.en_ligne)}</td>
                     <td className="whitespace-nowrap text-right font-extrabold tabular-nums">{ariary(x.total)}</td>
+                    {t.part_chauffeurs > 0 && <td className="whitespace-nowrap text-right tabular-nums text-encre-douce">{x.part_chauffeurs ? ariary(x.part_chauffeurs) : '—'}</td>}
                   </tr>
                 ))}
                 <tr className="bg-fond font-extrabold">
@@ -261,6 +268,7 @@ export default function ChiffreAffaires() {
                   <td className="whitespace-nowrap text-right tabular-nums">{ariary(t.guichet)}</td>
                   <td className="whitespace-nowrap text-right tabular-nums">{ariary(t.en_ligne)}</td>
                   <td className="whitespace-nowrap text-right tabular-nums">{ariary(t.brut)}</td>
+                  {t.part_chauffeurs > 0 && <td className="whitespace-nowrap text-right tabular-nums">{ariary(t.part_chauffeurs)}</td>}
                 </tr>
               </Tableau>
             )}

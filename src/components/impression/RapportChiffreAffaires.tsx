@@ -49,6 +49,7 @@ export function ImpressionRapport({ rapport, onTermine }: { rapport: DonneesRapp
               ['Ventes en ligne', ariary(t.en_ligne)],
               ['Ventes totales', ariary(t.brut), true],
               [`Commission FANDRIO (${taux_commission} % des ventes en ligne)`, `− ${ariary(t.commission)}`],
+              ...(t.part_chauffeurs > 0 ? [['Part des chauffeurs (voitures de particuliers)', `− ${ariary(t.part_chauffeurs)}`]] : []),
               ['Net pour la compagnie', ariary(t.net), true],
             ].map(([l, v, g]) => (
               <tr key={String(l)} className={g ? 'font-bold' : ''}>

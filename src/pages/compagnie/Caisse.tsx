@@ -98,7 +98,7 @@ export default function Caisse() {
       ) : (
         <>
           <section className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]">
-            <Kpi marine icone={Banknote} libelle={`Espèces attendues · ${jour === 'aujourdhui' ? 'aujourd’hui' : libelleJour.toLowerCase()}`} valeur={ariary(t?.attendu, false)} unite="Ar" detail={t ? `${pluriel(t.nb_billets, 'billet')} · ${pluriel(t.nb_ventes, 'vente')}` : undefined} chargement={q.isLoading} />
+            <Kpi marine icone={Banknote} libelle={`Espèces attendues · ${jour === 'aujourdhui' ? 'aujourd’hui' : libelleJour.toLowerCase()}`} valeur={ariary(t?.attendu, false)} unite="Ar" detail={t ? `${pluriel(t.nb_billets, 'billet')} · ${pluriel(t.nb_ventes, 'vente')}${t.part_chauffeurs > 0 ? ` · dont ${ariary(t.part_chauffeurs)} pour les chauffeurs` : ''}` : undefined} chargement={q.isLoading} />
             <Kpi
               icone={Lock}
               ton={t && t.nb_cloturees < t.nb_caisses ? 'alerte' : 'succes'}
@@ -133,7 +133,10 @@ export default function Caisse() {
                       <span className="block text-[12px] font-semibold text-encre-douce">{pluriel(c.nb_ventes, 'vente')}</span>
                     </td>
                     <td className="text-right tabular-nums">{nombre(c.nb_billets)}</td>
-                    <td className="whitespace-nowrap text-right font-semibold tabular-nums">{ariary(c.attendu)}</td>
+                    <td className="whitespace-nowrap text-right font-semibold tabular-nums">
+                      {ariary(c.attendu)}
+                      {c.part_chauffeurs > 0 && <span className="block text-[12px] font-semibold text-encre-douce">dont {ariary(c.part_chauffeurs)} chauffeurs</span>}
+                    </td>
                     <td className="whitespace-nowrap text-right tabular-nums">{c.cloture ? ariary(c.cloture.compte) : <span className="text-gris-clair">—</span>}</td>
                     <td className="text-right">
                       {c.cloture ? (

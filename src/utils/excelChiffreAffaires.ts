@@ -70,6 +70,7 @@ export async function exporterChiffreAffaires(d: DonneesExport): Promise<void> {
   ligne('Ventes en ligne', t.en_ligne);
   ligne('Ventes totales', t.brut, true);
   ligne(`Commission FANDRIO (${d.resume.taux_commission} % des ventes en ligne)`, -t.commission);
+  if (t.part_chauffeurs) ligne('Part des chauffeurs (voitures de particuliers)', -t.part_chauffeurs);
   const net = ligne('Net pour la compagnie', t.net, true);
   net.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEBF2F9' } };
   res.addRow([]);
@@ -97,10 +98,12 @@ export async function exporterChiffreAffaires(d: DonneesExport): Promise<void> {
       { titre: 'Billets', cle: 'billets', largeur: 9 },
       { titre: 'Montant', cle: 'montant', largeur: 15, ar: true },
       { titre: 'Commission', cle: 'commission', largeur: 14, ar: true },
-      { titre: 'Net', cle: 'net', largeur: 15, ar: true },
+      { titre: 'Voiture', cle: 'voiture', largeur: 12 },
+      { titre: 'Part chauffeur', cle: 'part_chauffeur', largeur: 15, ar: true },
+      { titre: 'Net compagnie', cle: 'net', largeur: 15, ar: true },
     ],
     v,
-    { date: 'Total', billets: v.reduce((s, x) => s + x.billets, 0), montant: v.reduce((s, x) => s + x.montant, 0), commission: v.reduce((s, x) => s + x.commission, 0), net: v.reduce((s, x) => s + x.net, 0) }
+    { date: 'Total', billets: v.reduce((s, x) => s + x.billets, 0), montant: v.reduce((s, x) => s + x.montant, 0), commission: v.reduce((s, x) => s + x.commission, 0), part_chauffeur: v.reduce((s, x) => s + (x.part_chauffeur || 0), 0), net: v.reduce((s, x) => s + x.net, 0) }
   );
 
   // ── Par trajet ──
@@ -116,9 +119,10 @@ export async function exporterChiffreAffaires(d: DonneesExport): Promise<void> {
       { titre: 'Guichet', cle: 'guichet', largeur: 15, ar: true },
       { titre: 'En ligne', cle: 'en_ligne', largeur: 15, ar: true },
       { titre: 'Total', cle: 'total', largeur: 16, ar: true },
+      { titre: 'Part chauffeurs', cle: 'part_chauffeurs', largeur: 16, ar: true },
     ],
     pt,
-    { trajet: 'Total', voyages: pt.reduce((s, x) => s + x.voyages, 0), billets: pt.reduce((s, x) => s + x.billets, 0), guichet: t.guichet, en_ligne: t.en_ligne, total: t.brut }
+    { trajet: 'Total', voyages: pt.reduce((s, x) => s + x.voyages, 0), billets: pt.reduce((s, x) => s + x.billets, 0), guichet: t.guichet, en_ligne: t.en_ligne, total: t.brut, part_chauffeurs: t.part_chauffeurs || 0 }
   );
 
   // ── Par moyen de paiement ──
