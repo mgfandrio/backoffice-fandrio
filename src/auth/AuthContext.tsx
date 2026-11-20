@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const r = await api.post('/api/connexion', { identifiant: identifiant.trim(), motDePasse });
     const token: string | undefined = r.data?.token;
     const u: Utilisateur | undefined = r.data?.utilisateur;
-    if (!r.data?.statut || !token || !u) throw new ErreurApi(r.data?.message || 'Identifiants incorrects.');
+    if (!r.data?.statut || !token || !u) throw new ErreurApi(r.data?.message || 'Identifiant ou mot de passe incorrect.');
     if (u.role !== 2 && u.role !== 3) {
       // Compte client : on ferme aussitôt la session ouverte côté API
       await api.post('/api/deconnexion', {}, { headers: { Authorization: `Bearer ${token}` } }).catch(() => undefined);
